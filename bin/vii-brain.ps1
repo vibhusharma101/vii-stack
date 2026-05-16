@@ -15,11 +15,8 @@ if (-not $NodeCmd) {
 
 $NodeModules = Join-Path $Root "vii-brain/node_modules"
 if (-not (Test-Path $NodeModules)) {
-    Write-Host "vii-brain: first run — installing dependencies (npm install)..." -ForegroundColor Cyan
-    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
-    if (-not $NpmCmd) { Write-Error "vii-brain: 'npm' not found. Install Node.js 18+."; exit 1 }
-    Push-Location (Join-Path $Root "vii-brain")
-    try { & npm install --silent } finally { Pop-Location }
+    Write-Error "vii-brain: dependencies not installed. Run setup.ps1 first."
+    exit 1
 }
 
 & node $Script @args
