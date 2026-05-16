@@ -30,9 +30,14 @@ $dangerous = @(
     'reboot\s'
 )
 
+# Truncate at free-text argument flags so content passed to --body/-m/etc.
+# can't trigger false positives, then strip remaining quoted strings.
+$cmdToCheck = $cmd -replace '\s+(-m|--message|--body|--body-file|-F|--trailer)\s+[\s\S]*$', ''
+$cmdToCheck = $cmdToCheck -replace '"[^"]*"', '""' -replace "'[^']*'", "''"
+
 $hit = $null
 foreach ($pat in $dangerous) {
-    if ($cmd -match $pat) { $hit = $pat; break }
+    if ($cmdToCheck -match $pat) { $hit = $pat; break }
 }
 
 if (-not $hit) { exit 0 }

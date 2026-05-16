@@ -1,12 +1,25 @@
-# SessionStart hook. Prints vii-stack status into the session.
+# SessionStart hook. Prints vii-stack status into the session and records the
+# current session id so /vii-careful can create the right ack file.
 
 $ErrorActionPreference = 'SilentlyContinue'
 
+$payload = $null
 try {
     $payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
     $cwd = $payload.cwd
 } catch {}
 if (-not $cwd) { $cwd = (Get-Location).Path }
+
+# Record the session id for /vii-careful. Also sweep any stale ack files from
+# prior sessions so careful state is genuinely per-session.
+if ($payload -and $payload.session_id) {
+    $viiDir = Join-Path $cwd ".vii"
+    if (-not (Test-Path $viiDir)) { New-Item -ItemType Directory -Path $viiDir | Out-Null }
+    Set-Content -Path (Join-Path $viiDir ".current-session") -Value $payload.session_id -Encoding utf8 -NoNewline
+    Get-ChildItem -Path $viiDir -Filter "careful-acked-*" -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -ne "careful-acked-$($payload.session_id)" } |
+        Remove-Item -Force -ErrorAction SilentlyContinue
+}
 
 $lines = @()
 $lines += "vii-stack active"
