@@ -1,0 +1,5 @@
+.vii/
+gbrain.db
+gbrain.db-*
+*.log
+node_modules/
