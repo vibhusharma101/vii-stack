@@ -24,7 +24,7 @@ You have the **vii-stack** skill pack installed. It encodes a `Think → Plan �
 
 **Browsing:** use `/vii-browse` (Playwright MCP) for any web navigation. Screenshots land in `.vii/screenshots/`.
 
-**Memory:** `/vii-learn` writes to both Claude Code's auto-memory and **GBrain** (cross-project persistent store at `~/.vii/gbrain.db`). Query GBrain at the start of long sessions to recall prior context.
+**Memory:** `/vii-learn` writes to both Claude Code's auto-memory and **vii-brain** (cross-project persistent store at `~/.vii/vii-brain.db/`). Query vii-brain at the start of long sessions to recall prior context.
 
 **Safety hooks are enforced** — `/vii-careful` must be acknowledged before destructive shell commands; `/vii-freeze <dir>` locks edits to a subtree. Hooks block; skill prompts only advise.
 <!-- END vii-stack -->

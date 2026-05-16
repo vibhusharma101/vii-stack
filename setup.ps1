@@ -150,12 +150,27 @@ if ($DryRun) { Info "would write $Settings" }
 else        { Set-Content -Path $Settings -Value $out -Encoding utf8; Info "wrote $Settings" }
 
 # ---------------------------------------------------------------------------
-# 5. Initialize GBrain (stub for Phase 2).
+# 5. Install vii-brain dependencies and initialise the database.
 # ---------------------------------------------------------------------------
-Step "Initializing GBrain (stub)"
-if ($DryRun) { Info "would run vii-gbrain init" }
-else {
-    & $PsExe -NoProfile -File (Join-Path $Root "bin/vii-gbrain.ps1") init
+Step "Setting up vii-brain"
+$ViibrainDir = Join-Path $Root "vii-brain"
+$NodeModules = Join-Path $ViibrainDir "node_modules"
+if ($DryRun) {
+    Info "would npm install in $ViibrainDir"
+    Info "would run vii-brain init"
+} else {
+    $NpmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    if (-not $NpmCmd) {
+        Warn "npm not found - skipping vii-brain dependency install. Install Node.js 18+ and re-run setup.ps1."
+    } else {
+        if (-not (Test-Path $NodeModules)) {
+            Push-Location $ViibrainDir
+            try { & npm install --silent; Info "npm install complete" } finally { Pop-Location }
+        } else {
+            Info "node_modules already present, skipping install"
+        }
+        & $PsExe -NoProfile -File (Join-Path $Root "bin/vii-brain.ps1") init
+    }
 }
 
 # ---------------------------------------------------------------------------

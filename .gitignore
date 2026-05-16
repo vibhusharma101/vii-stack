@@ -1,5 +1,3 @@
 .vii/
-gbrain.db
-gbrain.db-*
+vii-brain/node_modules/
 *.log
-node_modules/

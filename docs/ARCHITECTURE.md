@@ -11,7 +11,7 @@ Give a single builder (using Claude Code) the discipline and throughput of a sma
 3. **Prefixed namespace.** Every command is `/vii-<verb>` to avoid colliding with other skill packs.
 4. **Stage gates.** Each stage in the Think→Ship loop produces an artifact the next stage consumes (e.g. `/vii-plan-eng` writes `.vii/plan.md`, `/vii-review` reads it).
 5. **Hooks for safety, not skills.** Destructive-command blocking lives in `settings.json` hooks, not in skill prompts (skill prompts are advisory; hooks are enforced).
-6. **Persistent memory is first-class.** GBrain is the long-term store; Claude Code's auto-memory is the short-term store. Both are wired in.
+6. **Persistent memory is first-class.** vii-brain is the long-term store; Claude Code's auto-memory is the short-term store. Both are wired in.
 
 ## Layout
 
@@ -62,12 +62,13 @@ vii-stack/
 ├── bin/
 │   ├── vii-freeze-check.ps1        # Called by PreToolUse hook
 │   ├── vii-careful-check.ps1       # Called by PreToolUse hook
-│   └── vii-gbrain.ps1              # GBrain CLI shim
+│   └── vii-brain.ps1               # vii-brain CLI shim (delegates to vii-brain.mjs)
 ├── hooks/
 │   └── settings.snippet.json       # Merged into ~/.claude/settings.json by setup
-├── gbrain/
-│   ├── schema.sql                  # PGLite + Supabase schema
-│   ├── migrations/
+├── vii-brain/
+│   ├── vii-brain.mjs               # PGLite backend (Node.js ESM)
+│   ├── package.json                # @electric-sql/pglite dependency
+│   ├── schema.sql                  # Reference schema
 │   └── README.md
 └── docs/
     ├── ARCHITECTURE.md
@@ -85,20 +86,19 @@ Each stage writes its output under `.vii/` in the project repo so the next stage
 | Build   | `/vii-design-shotgun`   | `.vii/mockups/<variant>.html`     |
 | Review  | `/vii-review`           | `.vii/review/<sha>.md`            |
 | Test    | `/vii-qa`               | `.vii/qa/<run>.md`, screenshots/  |
-| Ship    | `/vii-ship`             | PR link recorded in GBrain        |
+| Ship    | `/vii-ship`             | PR link recorded in vii-brain     |
 | Reflect | `/vii-retro`            | `.vii/retro/<week>.md`            |
 
 `.vii/` is git-ignored by default; user can opt to commit `plan.md` and `retro/`.
 
-## GBrain (kept from gstack)
+## vii-brain
 
 A persistent knowledge base that survives across Claude Code sessions and projects.
 
-- **Default backend:** PGLite (embedded Postgres in a single file at `~/.vii/gbrain.db`). Zero setup.
-- **Optional backend:** Supabase (for multi-device sync). User flips a flag in `~/.vii/config.yaml`.
-- **Content:** indexed code symbols, past PR descriptions, retro notes, design taste profile, per-domain reference URLs.
-- **Access:** Claude reads/writes via `bin/vii-gbrain.ps1` (CLI shim) called from skills. Skills query GBrain at the start of long sessions to recall prior context.
-- **Distinct from Claude's auto-memory** at `~/.claude/projects/.../memory/`: that is conversational, slug-keyed, and per-project. GBrain is structured, queryable, and cross-project.
+- **Backend:** PGLite (embedded Postgres at `~/.vii/vii-brain.db/`). Zero setup — Node.js 18+ required.
+- **Content:** past PR URLs, retro notes, cross-project learnings, design decisions, reference URLs.
+- **Access:** Claude reads/writes via `bin/vii-brain.ps1` (shim → `vii-brain/vii-brain.mjs`). Skills query vii-brain at session start to recall prior context.
+- **Distinct from Claude's auto-memory** at `~/.claude/projects/.../memory/`: that is conversational, slug-keyed, and per-project. vii-brain is structured, queryable, and cross-project.
 
 ## Playwright MCP
 
@@ -142,7 +142,7 @@ Skills can *advise* the user but cannot bypass hooks — hooks are the source of
         └────┬────┘
              ▼
         ┌─────────┐
-        │ Reflect │   /vii-retro → /vii-learn → GBrain
+        │ Reflect │   /vii-retro → /vii-learn → vii-brain
         └─────────┘
 ```
 

@@ -1,0 +1,9 @@
+{
+  "name": "vii-brain",
+  "type": "module",
+  "private": true,
+  "description": "Cross-project persistent memory store for vii-stack.",
+  "dependencies": {
+    "@electric-sql/pglite": "^0.2.15"
+  }
+}
