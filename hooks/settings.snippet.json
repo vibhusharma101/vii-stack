@@ -1,0 +1,41 @@
+{
+  "_comment": "Merged into ~/.claude/settings.json by setup.ps1. Hook command paths are rewritten to the absolute install path during install.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PS_EXE}} -NoProfile -File \"{{VII_STACK_ROOT}}/bin/vii-careful-check.ps1\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PS_EXE}} -NoProfile -File \"{{VII_STACK_ROOT}}/bin/vii-freeze-check.ps1\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{PS_EXE}} -NoProfile -File \"{{VII_STACK_ROOT}}/bin/vii-session-start.ps1\""
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
