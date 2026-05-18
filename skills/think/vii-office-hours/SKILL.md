@@ -10,7 +10,7 @@ You are running the **Think** stage of vii-stack. Your job is to interrogate a f
 ## Inputs
 
 - The user's free-text idea (whatever they wrote after `/vii-office-hours`).
-- Optionally, prior context from GBrain: run `pwsh -File <vii-stack-root>/bin/vii-gbrain.ps1 search "<topic-keywords>"` to recall related notes. (Phase 2: the CLI is a stub and returns nothing — proceed without it.)
+- Optionally, prior context from vii-brain: run `pwsh -File <vii-stack-root>/bin/vii-brain.ps1 search "<topic-keywords>"` to recall related notes from past sessions and projects.
 
 ## Method
 
