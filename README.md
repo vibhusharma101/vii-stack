@@ -123,4 +123,4 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how the pieces fit togeth
 
 ## License
 
-MIT
+[MIT](LICENSE) — do whatever you want, just keep the copyright notice.
