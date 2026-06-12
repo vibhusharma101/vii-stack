@@ -27,8 +27,22 @@ if (-not $cwd) { $cwd = (Get-Location).Path }
 $sentinel = Join-Path $cwd ".vii/cheap-mode"
 if (-not (Test-Path $sentinel)) { exit 0 }
 
-# rtk must be installed, otherwise this is a silent no-op.
-if (-not (Get-Command rtk -ErrorAction SilentlyContinue)) { exit 0 }
+# Resolve the rtk executable. Prefer rtk on PATH; otherwise fall back to the
+# install location used by /vii-cheap's setup (~/.rtk/bin/rtk.exe). The fallback
+# matters on Windows, where a freshly-installed binary may not be on PATH yet for
+# an already-running Claude Code process. Silent no-op if rtk can't be found.
+$rtkInvoke = $null
+if (Get-Command rtk -ErrorAction SilentlyContinue) {
+    $rtkInvoke = 'rtk'
+} else {
+    $fallback = Join-Path $HOME '.rtk\bin\rtk.exe'
+    if (Test-Path $fallback) {
+        # MSYS/Git-Bash-friendly absolute path: C:\..\rtk.exe -> /C/../rtk.exe
+        $msys = ($fallback -replace '\\', '/') -replace '^([A-Za-z]):', '/$1'
+        $rtkInvoke = '"' + $msys + '"'
+    }
+}
+if (-not $rtkInvoke) { exit 0 }
 
 $trimmed = $cmd.TrimStart()
 
@@ -60,10 +74,10 @@ if (-not $match) { exit 0 }
 
 # Ultra-compact mode: if the sentinel contains the word "ultra", add -u for
 # even tighter output.
-$prefix = 'rtk '
+$prefix = "$rtkInvoke "
 try {
     $body = (Get-Content $sentinel -Raw -ErrorAction SilentlyContinue)
-    if ($body -and $body -match 'ultra') { $prefix = 'rtk -u ' }
+    if ($body -and $body -match 'ultra') { $prefix = "$rtkInvoke -u " }
 } catch {}
 
 $new = $prefix + $trimmed
