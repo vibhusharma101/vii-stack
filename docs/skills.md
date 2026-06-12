@@ -170,6 +170,16 @@ Stages: **Think · Plan · Build · Review · Test · Ship · Reflect · Securit
 
 ---
 
+## Token-saving
+
+### `/vii-cheap`
+**Purpose:** Toggle "cheap mode" — route read-heavy shell commands through [RTK](https://github.com/rtk-ai/rtk) so their output is compressed 50-90% before it reaches the context window.
+**Mechanism:** Writes the sentinel `.vii/cheap-mode`. The PreToolUse hook (`bin/vii-cheap-rewrite.ps1`) rewrites a conservative allowlist of read-only commands (`git status/log/diff`, `cargo test`, `pytest`, `ls`, `grep`, …) to `rtk <cmd>` via `hookSpecificOutput.updatedInput`, but only when `rtk` is on PATH. Write commands, pipelines, and chains are never wrapped.
+**Args:** `on` (default), `off`, `status`, `ultra` (adds `-u`), `gain` (runs `rtk gain` for savings stats).
+**Requires:** the `rtk` binary — `brew install rtk`, `cargo install --git https://github.com/rtk-ai/rtk`, or the install script. Per-project; persists across sessions.
+
+---
+
 ## Stage → skill cheat sheet
 
 | Stage   | Primary command            | Alt / sub-commands                                       |
@@ -182,3 +192,4 @@ Stages: **Think · Plan · Build · Review · Test · Ship · Reflect · Securit
 | Ship    | `/vii-ship`                | `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release` |
 | Reflect | `/vii-retro`               | `/vii-learn`                                             |
 | Safety  | `/vii-guard`               | `/vii-careful`, `/vii-freeze`, `/vii-unfreeze`           |
+| Tokens  | `/vii-cheap`               | `/vii-cheap on|off|status|ultra|gain`                   |

@@ -21,10 +21,13 @@ You have the **vii-stack** skill pack installed. It encodes a `Think → Plan �
 - Reflect: `/vii-retro`, `/vii-learn`
 - Security: `/vii-cso`
 - Safety: `/vii-careful`, `/vii-freeze`, `/vii-guard`, `/vii-unfreeze`
+- Token-saving: `/vii-cheap`
 
 **Browsing:** use `/vii-browse` (Playwright MCP) for any web navigation. Screenshots land in `.vii/screenshots/`.
 
 **Memory:** `/vii-learn` writes to both Claude Code's auto-memory and **vii-brain** (cross-project persistent store at `~/.vii/vii-brain.db/`). Query vii-brain at the start of long sessions to recall prior context.
 
 **Safety hooks are enforced** — `/vii-careful` must be acknowledged before destructive shell commands; `/vii-freeze <dir>` locks edits to a subtree. Hooks block; skill prompts only advise.
+
+**Cheap mode:** `/vii-cheap on` routes read-heavy shell commands (`git status/log/diff`, `cargo test`, `pytest`, `ls`, `grep`, …) through [`rtk`](https://github.com/rtk-ai/rtk) so their output is compressed 50-90% before it enters context. Requires the `rtk` binary (`brew install rtk`). Per-project, persists across sessions; `/vii-cheap off` to disable, `/vii-cheap gain` for savings stats.
 <!-- END vii-stack -->
