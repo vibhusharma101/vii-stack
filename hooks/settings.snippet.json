@@ -8,6 +8,10 @@
           {
             "type": "command",
             "command": "{{PS_EXE}} -NoProfile -File \"{{VII_STACK_ROOT}}/bin/vii-careful-check.ps1\""
+          },
+          {
+            "type": "command",
+            "command": "{{PS_EXE}} -NoProfile -File \"{{VII_STACK_ROOT}}/bin/vii-cheap-rewrite.ps1\""
           }
         ]
       },

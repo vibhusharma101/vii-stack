@@ -32,6 +32,18 @@ if (Test-Path $freezeFile) {
     $lines += "  freeze: off"
 }
 
+$cheapFile = Join-Path $cwd ".vii/cheap-mode"
+if (Test-Path $cheapFile) {
+    $cheapBody = (Get-Content $cheapFile -Raw -ErrorAction SilentlyContinue)
+    if ($cheapBody -and $cheapBody -match 'ultra') {
+        $lines += "  cheap: on (ultra) - rtk compressing read-heavy commands"
+    } else {
+        $lines += "  cheap: on - rtk compressing read-heavy commands"
+    }
+} else {
+    $lines += "  cheap: off"
+}
+
 $planFile = Join-Path $cwd ".vii/plan.md"
 if (Test-Path $planFile) {
     $lines += "  plan: .vii/plan.md present"

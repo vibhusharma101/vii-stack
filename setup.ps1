@@ -129,7 +129,7 @@ foreach ($evt in $snippet.hooks.PSObject.Properties.Name) {
         $existingArr = @($current.hooks[$evt] | Where-Object {
             $keep = $true
             foreach ($h in @($_.hooks)) {
-                if ($h.command -and ($h.command -match 'vii-stack' -or $h.command -match 'vii-careful-check' -or $h.command -match 'vii-freeze-check' -or $h.command -match 'vii-session-start')) {
+                if ($h.command -and ($h.command -match 'vii-stack' -or $h.command -match 'vii-careful-check' -or $h.command -match 'vii-cheap-rewrite' -or $h.command -match 'vii-freeze-check' -or $h.command -match 'vii-session-start')) {
                     $keep = $false; break
                 }
             }
