@@ -18,7 +18,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 
 ---
 
-## Commands (29 total)
+## Commands (31 total)
 
 | Stage | Command | What it does |
 |-------|---------|-------------|
@@ -32,6 +32,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-design-shotgun` | Generates 4-6 distinct static mockup variants |
 | | `/vii-design-html` | Converts chosen mockup to framework components |
 | **Review** | `/vii-review` | Staff engineer code review with severity-tagged findings |
+| | `/vii-lean-review` | Over-engineering audit — finds what to delete (stdlib, YAGNI, dead flexibility) |
 | | `/vii-investigate` | Five-whys root-cause debugger |
 | | `/vii-design-review` | Visual audit using live screenshots (WCAG AA) |
 | | `/vii-devex-review` | Cold-start friction audit from clean clone |
@@ -50,6 +51,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-freeze <dir>` | Lock all edits to one directory subtree |
 | | `/vii-guard <dir>` | `/vii-careful` + `/vii-freeze` in one command |
 | | `/vii-unfreeze` | Remove the freeze lock |
+| **Lean coding** | `/vii-lean` | Toggle lean coder mode — YAGNI ladder, stdlib first, shortest diff (levels: lite / full / ultra) |
 | **Token-saving** | `/vii-cheap` | Toggle cheap mode — route read-heavy commands through [RTK](https://github.com/rtk-ai/rtk) to compress output 50-90% before it hits context |
 
 ---

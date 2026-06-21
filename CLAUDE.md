@@ -15,12 +15,13 @@ You have the **vii-stack** skill pack installed. It encodes a `Think â†’ Plan â†
 - Think: `/vii-office-hours`
 - Plan: `/vii-autoplan`, `/vii-plan-ceo`, `/vii-plan-eng`, `/vii-plan-design`, `/vii-plan-devex`
 - Build: `/vii-design-consult`, `/vii-design-shotgun`, `/vii-design-html`
-- Review: `/vii-review`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`
+- Review: `/vii-review`, `/vii-lean-review`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`
 - Test: `/vii-qa`, `/vii-qa-only`, `/vii-browse`
 - Ship: `/vii-ship`, `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release`
 - Reflect: `/vii-retro`, `/vii-learn`
 - Security: `/vii-cso`
 - Safety: `/vii-careful`, `/vii-freeze`, `/vii-guard`, `/vii-unfreeze`
+- Lean coding: `/vii-lean`
 - Token-saving: `/vii-cheap`
 
 **Browsing:** use `/vii-browse` (Playwright MCP) for any web navigation. Screenshots land in `.vii/screenshots/`.
