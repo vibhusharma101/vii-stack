@@ -31,6 +31,28 @@ function Step($msg) { Write-Host "==> $msg" -ForegroundColor Cyan }
 function Info($msg) { Write-Host "    $msg" -ForegroundColor DarkGray }
 function Warn($msg) { Write-Host "    $msg" -ForegroundColor Yellow }
 
+# Recursively turn ConvertFrom-Json output into plain hashtables. Stands in for
+# `ConvertFrom-Json -AsHashtable`, which does not exist on Windows PowerShell
+# 5.1 - the version the README says vii-stack supports.
+function ConvertTo-HashtableDeep($obj) {
+    if ($null -eq $obj) { return $null }
+    if ($obj -is [string] -or $obj -is [valuetype]) { return $obj }
+    if ($obj -is [System.Collections.IDictionary]) {
+        $h = @{}
+        foreach ($k in @($obj.Keys)) { $h[$k] = ConvertTo-HashtableDeep $obj[$k] }
+        return $h
+    }
+    if ($obj -is [System.Collections.IEnumerable]) {
+        return @(foreach ($item in $obj) { ConvertTo-HashtableDeep $item })
+    }
+    if ($obj -is [psobject]) {
+        $h = @{}
+        foreach ($p in $obj.PSObject.Properties) { $h[$p.Name] = ConvertTo-HashtableDeep $p.Value }
+        return $h
+    }
+    return $obj
+}
+
 # ---------------------------------------------------------------------------
 # 1. Ensure ~/.claude and ~/.vii exist.
 # ---------------------------------------------------------------------------
@@ -115,9 +137,29 @@ $snippet     = $snippetRaw | ConvertFrom-Json
 
 $current = @{}
 if (Test-Path $Settings) {
-    try { $current = Get-Content -Raw -Path $Settings | ConvertFrom-Json -AsHashtable } catch { $current = @{} }
+    $rawSettings = Get-Content -Raw -Path $Settings
+    if ($rawSettings -and $rawSettings.Trim()) {
+        # ConvertFrom-Json -AsHashtable is PowerShell 7+. On 5.1 it throws, so
+        # parse to PSCustomObject and convert by hand rather than falling back
+        # to an empty hashtable - that would silently discard the user's
+        # existing settings.json on the very next write.
+        try {
+            $current = ConvertTo-HashtableDeep ($rawSettings | ConvertFrom-Json)
+        } catch {
+            throw "vii-stack: $Settings is not valid JSON ($($_.Exception.Message)). Refusing to overwrite it - fix or move the file, then re-run setup.ps1."
+        }
+        if ($null -eq $current) { $current = @{} }
+
+        # Keep one timestamped copy before rewriting a file we did not create.
+        if (-not $DryRun) {
+            $backup = "$Settings.vii-backup-" + (Get-Date -Format 'yyyyMMdd-HHmmss')
+            Copy-Item -Path $Settings -Destination $backup -Force
+            Info "backed up existing settings to $backup"
+        } else {
+            Info "would back up existing settings"
+        }
+    }
 }
-if ($null -eq $current) { $current = @{} }
 
 # Merge hooks
 if (-not $current.ContainsKey('hooks')) { $current['hooks'] = @{} }
