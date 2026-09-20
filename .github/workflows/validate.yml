@@ -17,8 +17,25 @@ jobs:
         shell: pwsh
         run: .\bin\vii-validate.ps1
 
+  hooks:
+    name: hook behavior
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The safety hooks must block real destructive commands and must not
+      # block prose that merely mentions one. Run on both shells: `powershell`
+      # is Windows PowerShell 5.1, the floor the README advertises.
+      - name: vii-careful-check (pwsh 7)
+        shell: pwsh
+        run: .\bin\vii-hook-test.ps1
+
+      - name: vii-careful-check (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\bin\vii-hook-test.ps1
+
   setup:
-    name: installer dry-run
+    name: installer
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +45,17 @@ jobs:
       - name: setup.ps1 -DryRun
         shell: pwsh
         run: .\setup.ps1 -DryRun
+
+      # The settings.json merge rewrites a file the installer did not create,
+      # so it is tested for real against a throwaway HOME - on 5.1 especially,
+      # where ConvertFrom-Json -AsHashtable does not exist.
+      - name: settings.json merge (pwsh 7)
+        shell: pwsh
+        run: .\bin\vii-setup-test.ps1
+
+      - name: settings.json merge (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\bin\vii-setup-test.ps1
 
   scripts:
     name: powershell syntax

@@ -9,7 +9,30 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 
 ## [Unreleased]
 
+### Fixed
+- **`setup.ps1` could discard an existing `~/.claude/settings.json`.** The merge
+  read it with `ConvertFrom-Json -AsHashtable`, which only exists on PowerShell
+  7+. On Windows PowerShell 5.1 — the version the README advertises as the
+  floor — the call threw, a `catch` reset the result to an empty hashtable, and
+  the file was rewritten with nothing but the vii-stack hooks, silently losing
+  `model`, `permissions`, `env` and anything else the user had set. Parsing is
+  now version-independent, unparseable JSON aborts the install instead of
+  overwriting, and a timestamped backup is written before any rewrite.
+- **`/vii-careful` blocked writing files that merely mention a destructive
+  command.** Heredoc bodies were matched as if they were commands, so writing a
+  doc containing `git reset --hard` in a "do not do this" line was refused.
+  Heredoc bodies are now stripped before matching, while a destructive command
+  on the same line still blocks.
+
 ### Added
+- `bin/vii-hook-test.ps1` — 16 cases pinning `vii-careful-check` behaviour:
+  real destructive commands block, prose mentioning them does not, and an
+  acknowledged session bypasses.
+- `bin/vii-setup-test.ps1` — end-to-end test of the `settings.json` merge
+  against a throwaway `HOME`: unrelated keys survive, re-running does not
+  duplicate hooks, and malformed JSON aborts without rewriting the file.
+- CI runs both suites on **PowerShell 5.1 and 7**, since the two bugs above
+  were 5.1-only and invisible to a 7-only test.
 - `bin/vii-validate.ps1` — validates every `SKILL.md`: frontmatter present,
   `name:` matches its directory, no duplicate leaf names (which `setup.ps1`
   would silently overwrite when it flattens `skills/<stage>/<name>`), and every
