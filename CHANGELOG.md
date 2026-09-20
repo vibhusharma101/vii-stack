@@ -10,6 +10,14 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 ## [Unreleased]
 
 ### Fixed
+- **A third-party PreToolUse hook could disable `/vii-careful` entirely.**
+  `setup.ps1` appended vii-stack's hooks after any already registered, so a
+  hook installed ahead of `vii-careful-check` — `rtk hook claude`, which
+  returns `hookSpecificOutput` for every git command — ended the PreToolUse
+  chain before the safety hook was consulted. Destructive git commands then ran
+  unblocked, with no indication anything had been skipped. vii-stack's hooks
+  are now registered **first**; third-party hooks are still preserved, just
+  ranked after.
 - **`setup.ps1` could discard an existing `~/.claude/settings.json`.** The merge
   read it with `ConvertFrom-Json -AsHashtable`, which only exists on PowerShell
   7+. On Windows PowerShell 5.1 — the version the README advertises as the
