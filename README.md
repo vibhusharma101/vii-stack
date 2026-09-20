@@ -18,7 +18,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 
 ---
 
-## Commands (31 total)
+## Commands (32 total)
 
 | Stage | Command | What it does |
 |-------|---------|-------------|
@@ -52,6 +52,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-guard <dir>` | `/vii-careful` + `/vii-freeze` in one command |
 | | `/vii-unfreeze` | Remove the freeze lock |
 | **Lean coding** | `/vii-lean` | Toggle lean coder mode — YAGNI ladder, stdlib first, shortest diff (levels: lite / full / ultra) |
+| **Maintenance** | `/vii-upgrade` | Pull the latest vii-stack and re-run `setup.ps1` — reports which commands changed |
 | **Token-saving** | `/vii-cheap` | Toggle cheap mode — route read-heavy commands through [RTK](https://github.com/rtk-ai/rtk) to compress output 50-90% before it hits context |
 
 ---
@@ -88,7 +89,7 @@ cd vii-stack
 ```
 
 The installer (idempotent — safe to re-run):
-1. Syncs all 28 skills to `~/.claude/skills/`
+1. Syncs all 32 skills to `~/.claude/skills/`
 2. Appends the vii-stack command list to `~/.claude/CLAUDE.md`
 3. Registers the safety hooks (`/vii-careful`, `/vii-freeze`) in `~/.claude/settings.json`
 4. Registers the Playwright MCP server for `/vii-browse`

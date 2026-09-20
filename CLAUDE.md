@@ -22,6 +22,7 @@ You have the **vii-stack** skill pack installed. It encodes a `Think â†’ Plan â†
 - Security: `/vii-cso`
 - Safety: `/vii-careful`, `/vii-freeze`, `/vii-guard`, `/vii-unfreeze`
 - Lean coding: `/vii-lean`
+- Maintenance: `/vii-upgrade`
 - Token-saving: `/vii-cheap`
 
 **Browsing:** use `/vii-browse` (Playwright MCP) for any web navigation. Screenshots land in `.vii/screenshots/`.
