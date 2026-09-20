@@ -178,7 +178,13 @@ foreach ($evt in $snippet.hooks.PSObject.Properties.Name) {
             $keep
         })
     }
-    $current.hooks[$evt] = @($existingArr + $incoming)
+    # vii-stack's entries go FIRST. A PreToolUse hook that returns
+    # hookSpecificOutput (RTK's `rtk hook claude` does this for every git
+    # command) ends the chain, so anything registered ahead of
+    # vii-careful-check silently disables it - destructive commands then run
+    # unblocked. Safety enforcement cannot depend on being registered first by
+    # luck, so claim the front of the list on every install.
+    $current.hooks[$evt] = @($incoming + $existingArr)
 }
 
 # Merge mcpServers

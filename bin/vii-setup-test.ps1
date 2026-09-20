@@ -74,6 +74,33 @@ $now2 = ($after2.hooks.PreToolUse | Measure-Object).Count
 Check "re-run does not duplicate hooks"      ($now2 -eq $before2) "PreToolUse went $before2 -> $now2"
 Check "re-run still keeps user settings"     ($after2.model -eq "claude-opus-5") "got: $($after2.model)"
 
+# --- Case 2b: a pre-existing third-party hook is kept, but ranked after ----
+# Reproduces the real failure: `rtk hook claude` registered ahead of
+# vii-careful-check returns hookSpecificOutput for git commands, which ends the
+# PreToolUse chain before the safety hook is ever consulted.
+$h2 = New-FakeHome
+$settings2b = Join-Path $h2 ".claude/settings.json"
+@{
+    hooks = @{
+        PreToolUse = @(
+            @{ matcher = "Bash"; hooks = @(@{ type = "command"; command = "rtk hook claude" }) }
+        )
+    }
+} | ConvertTo-Json -Depth 10 | Set-Content -Path $settings2b -Encoding utf8
+
+Invoke-Setup $h2 | Out-Null
+$after2b = Get-Content -Raw -Path $settings2b | ConvertFrom-Json
+$pre = @($after2b.hooks.PreToolUse)
+$firstCmds = @($pre[0].hooks | ForEach-Object { $_.command })
+$allCmds   = @($pre | ForEach-Object { $_.hooks } | ForEach-Object { $_.command })
+
+Check "third-party hook is preserved" (@($allCmds | Where-Object { $_ -eq "rtk hook claude" }).Count -eq 1) "got: $($allCmds -join ' | ')"
+Check "vii-careful-check runs first"  ($firstCmds -join ' ' -match 'vii-careful-check') "first group: $($firstCmds -join ' | ')"
+
+$carefulIdx = [array]::FindIndex([string[]]$allCmds, [Predicate[string]]{ param($c) $c -match 'vii-careful-check' })
+$rtkIdx     = [array]::FindIndex([string[]]$allCmds, [Predicate[string]]{ param($c) $c -eq 'rtk hook claude' })
+Check "safety hook ranks above rtk"   ($carefulIdx -ge 0 -and $rtkIdx -ge 0 -and $carefulIdx -lt $rtkIdx) "careful=$carefulIdx rtk=$rtkIdx"
+
 # --- Case 3: malformed JSON aborts instead of clobbering -------------------
 $h3 = New-FakeHome
 $settings3 = Join-Path $h3 ".claude/settings.json"
@@ -100,7 +127,7 @@ if (Test-Path $settings4) {
     Check "fresh install registers hooks"     ($null -ne $after4.hooks) "hooks key missing"
 }
 
-foreach ($h in @($h1, $h3, $h4)) { Remove-Item -Recurse -Force $h -ErrorAction SilentlyContinue }
+foreach ($h in @($h1, $h2, $h3, $h4)) { Remove-Item -Recurse -Force $h -ErrorAction SilentlyContinue }
 
 Write-Host ""
 if ($failed -gt 0) {
