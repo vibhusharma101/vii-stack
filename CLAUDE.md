@@ -12,17 +12,18 @@ You have the **vii-stack** skill pack installed. It encodes a `Think â†’ Plan â†
 
 **Available commands:**
 
-- Think: `/vii-office-hours`
-- Plan: `/vii-autoplan`, `/vii-plan-ceo`, `/vii-plan-eng`, `/vii-plan-design`, `/vii-plan-devex`
-- Build: `/vii-design-consult`, `/vii-design-shotgun`, `/vii-design-html`
-- Review: `/vii-review`, `/vii-lean-review`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`
+- Think: `/vii-office-hours`, `/vii-spec`
+- Plan: `/vii-autoplan`, `/vii-plan-ceo`, `/vii-plan-eng`, `/vii-plan-design`, `/vii-plan-devex`, `/vii-plan-tune`
+- Build: `/vii-design-consult`, `/vii-design-shotgun`, `/vii-design-html`, `/vii-diagram`
+- Review: `/vii-review`, `/vii-lean-review`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`, `/vii-health`
 - Test: `/vii-qa`, `/vii-qa-only`, `/vii-browse`
-- Ship: `/vii-ship`, `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release`
+- Ship: `/vii-ship`, `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release`, `/vii-landing-report`
+- Context: `/vii-context-save`, `/vii-context-restore`
 - Reflect: `/vii-retro`, `/vii-learn`
 - Security: `/vii-cso`
 - Safety: `/vii-careful`, `/vii-freeze`, `/vii-guard`, `/vii-unfreeze`
 - Lean coding: `/vii-lean`
-- Maintenance: `/vii-upgrade`
+- Maintenance: `/vii-upgrade`, `/vii-skillify`
 - Token-saving: `/vii-cheap`
 
 **Browsing:** use `/vii-browse` (Playwright MCP) for any web navigation. Screenshots land in `.vii/screenshots/`.
