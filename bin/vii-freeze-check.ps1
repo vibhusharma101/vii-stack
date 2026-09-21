@@ -30,7 +30,12 @@ try {
     exit 0
 }
 
-if ($resolvedTarget.StartsWith($resolvedLock, [System.StringComparison]::OrdinalIgnoreCase)) {
+# Compare against the lock *with* a trailing separator. A bare string prefix
+# check treats any sibling that starts with the lock's name as inside it - a
+# lock on C:\proj\src would admit C:\proj\src-old\x.ts and C:\proj\srcbackup\.
+$lockPrefix = $resolvedLock.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+
+if ($resolvedTarget.StartsWith($lockPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
     exit 0
 }
 
