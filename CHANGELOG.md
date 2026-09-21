@@ -33,6 +33,22 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
   on the same line still blocks.
 
 ### Added
+- Eight skills ported from [gstack](https://github.com/garrytan/gstack),
+  adapted to vii-stack's PowerShell runtime and stage conventions (32 → 40):
+  - `/vii-spec` — intent to spec, with acceptance criteria that can fail.
+  - `/vii-plan-tune` — dial for how hard the planning stage interrogates you
+    (`low` / `normal` / `high` / `off`), sentinel-based like `/vii-cheap`.
+  - `/vii-diagram` — Mermaid flowchart, sequence, ER or state diagram; source
+    is the artifact, SVG rendered when `mmdc` is present.
+  - `/vii-health` — whole-repo dashboard: build, tests, dependency advisories,
+    doc drift, and whether the vii-stack install itself is intact.
+  - `/vii-landing-report` — read-only queue of what can land and what blocks
+    the rest, including local branches that have no PR yet.
+  - `/vii-context-save` and `/vii-context-restore` — session checkpoints that
+    record the reasoning git cannot: decisions, rejected approaches, and the
+    exact next command. Restore reports drift since the checkpoint.
+  - `/vii-skillify` — turn a workflow just performed into a permanent skill,
+    registered and validated.
 - `bin/vii-hook-test.ps1` — 16 cases pinning `vii-careful-check` behaviour:
   real destructive commands block, prose mentioning them does not, and an
   acknowledged session bypasses.

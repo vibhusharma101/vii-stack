@@ -18,24 +18,28 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 
 ---
 
-## Commands (32 total)
+## Commands (40 total)
 
 | Stage | Command | What it does |
 |-------|---------|-------------|
 | **Think** | `/vii-office-hours` | Product manager — grills your idea with forcing questions before any code |
+| | `/vii-spec` | Turns intent into a spec with acceptance criteria sharp enough to test |
 | **Plan** | `/vii-autoplan` | Runs all planning perspectives automatically |
 | | `/vii-plan-eng` | Engineering manager — file-level change list, test plan, rollback strategy |
 | | `/vii-plan-ceo` | CEO — business value, scope tradeoff, go/no-go |
 | | `/vii-plan-design` | Designer — user flows, component inventory, accessibility |
 | | `/vii-plan-devex` | DevEx — API ergonomics, error messages, docs gaps |
+| | `/vii-plan-tune` | Tune how hard the planning stage interrogates you (low / normal / high / off) |
 | **Build** | `/vii-design-consult` | Derives a design token set from 2-3 reference sites |
 | | `/vii-design-shotgun` | Generates 4-6 distinct static mockup variants |
 | | `/vii-design-html` | Converts chosen mockup to framework components |
+| | `/vii-diagram` | Mermaid diagram of a flow, sequence, schema or state machine |
 | **Review** | `/vii-review` | Staff engineer code review with severity-tagged findings |
 | | `/vii-lean-review` | Over-engineering audit — finds what to delete (stdlib, YAGNI, dead flexibility) |
 | | `/vii-investigate` | Five-whys root-cause debugger |
 | | `/vii-design-review` | Visual audit using live screenshots (WCAG AA) |
 | | `/vii-devex-review` | Cold-start friction audit from clean clone |
+| | `/vii-health` | Whole-repo health dashboard — build, tests, deps, doc drift, install integrity |
 | **Test** | `/vii-browse` | Real Chromium via Playwright MCP — navigate, screenshot, extract logs |
 | | `/vii-qa` | Finds bugs, fixes them, verifies fixes |
 | | `/vii-qa-only` | Same as /vii-qa but report-only, no code changes |
@@ -44,6 +48,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-canary` | Post-deploy monitor (5 checks × 2 min) |
 | | `/vii-benchmark` | Core Web Vitals (LCP/CLS/INP/TTFB) vs baseline |
 | | `/vii-doc-release` | Update README + CHANGELOG after shipping |
+| | `/vii-landing-report` | Read-only dashboard: what's ready to land, what's blocking the rest |
 | **Reflect** | `/vii-learn` | Save a lesson to vii-brain + Claude auto-memory |
 | | `/vii-retro` | Weekly retrospective from git log + vii-brain |
 | **Security** | `/vii-cso` | OWASP Top 10 + STRIDE audit on current diff |
@@ -52,7 +57,10 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-guard <dir>` | `/vii-careful` + `/vii-freeze` in one command |
 | | `/vii-unfreeze` | Remove the freeze lock |
 | **Lean coding** | `/vii-lean` | Toggle lean coder mode — YAGNI ladder, stdlib first, shortest diff (levels: lite / full / ultra) |
+| **Context** | `/vii-context-save` | Checkpoint the session — goal, decisions, dead ends, exact next step |
+| | `/vii-context-restore` | Resume from a checkpoint, reporting any drift since it was written |
 | **Maintenance** | `/vii-upgrade` | Pull the latest vii-stack and re-run `setup.ps1` — reports which commands changed |
+| | `/vii-skillify` | Turn a workflow you just performed into a permanent vii-stack skill |
 | **Token-saving** | `/vii-cheap` | Toggle cheap mode — route read-heavy commands through [RTK](https://github.com/rtk-ai/rtk) to compress output 50-90% before it hits context |
 
 ---
@@ -89,7 +97,7 @@ cd vii-stack
 ```
 
 The installer (idempotent — safe to re-run):
-1. Syncs all 32 skills to `~/.claude/skills/`
+1. Syncs all 40 skills to `~/.claude/skills/`
 2. Appends the vii-stack command list to `~/.claude/CLAUDE.md`
 3. Registers the safety hooks (`/vii-careful`, `/vii-freeze`) in `~/.claude/settings.json`
 4. Registers the Playwright MCP server for `/vii-browse`
