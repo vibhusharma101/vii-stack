@@ -43,7 +43,14 @@ function ConvertTo-HashtableDeep($obj) {
         return $h
     }
     if ($obj -is [System.Collections.IEnumerable]) {
-        return @(foreach ($item in $obj) { ConvertTo-HashtableDeep $item })
+        $arr = @(foreach ($item in $obj) { ConvertTo-HashtableDeep $item })
+        # `return $arr` would unwrap a single-element array into a scalar, and
+        # ConvertTo-Json would then write an object where the file had a
+        # one-item list. That silently corrupts any third-party setting shaped
+        # like [{...}] - a hooks matcher with exactly one hook, for instance,
+        # which Claude Code then refuses to load. The unary comma keeps it an
+        # array of one.
+        return ,$arr
     }
     if ($obj -is [psobject]) {
         $h = @{}

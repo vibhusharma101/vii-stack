@@ -101,6 +101,32 @@ $carefulIdx = [array]::FindIndex([string[]]$allCmds, [Predicate[string]]{ param(
 $rtkIdx     = [array]::FindIndex([string[]]$allCmds, [Predicate[string]]{ param($c) $c -eq 'rtk hook claude' })
 Check "safety hook ranks above rtk"   ($carefulIdx -ge 0 -and $rtkIdx -ge 0 -and $carefulIdx -lt $rtkIdx) "careful=$carefulIdx rtk=$rtkIdx"
 
+# --- Case 2c: single-element arrays survive the round-trip -----------------
+# A third-party matcher with exactly one hook is shaped [{...}]. PowerShell
+# unwraps a one-element array on return, so a naive deep-convert rewrites it as
+# {...} - which Claude Code refuses to load, taking the whole entry with it.
+# This is what happened to `rtk hook claude` in the wild.
+$h5 = New-FakeHome
+$settings5 = Join-Path $h5 ".claude/settings.json"
+@{
+    hooks = @{
+        PreToolUse = @(
+            @{ matcher = "Bash"; hooks = @(@{ type = "command"; command = "rtk hook claude" }) }
+        )
+    }
+    permissions = @{ allow = @("Bash(ls)") }
+} | ConvertTo-Json -Depth 10 | Set-Content -Path $settings5 -Encoding utf8
+
+Invoke-Setup $h5 | Out-Null
+$raw5 = Get-Content -Raw -Path $settings5
+$after5 = $raw5 | ConvertFrom-Json
+$rtkEntry = @($after5.hooks.PreToolUse) | Where-Object {
+    $_.hooks -and (@($_.hooks) | Where-Object { $_.command -eq 'rtk hook claude' })
+} | Select-Object -First 1
+
+Check "one-hook matcher stays an array" ($null -ne $rtkEntry -and $rtkEntry.hooks -is [array]) "hooks is $(if ($rtkEntry) { $rtkEntry.hooks.GetType().Name } else { 'entry missing' })"
+Check "one-item allow list stays an array" ($after5.permissions.allow -is [array]) "allow is $($after5.permissions.allow.GetType().Name)"
+
 # --- Case 3: malformed JSON aborts instead of clobbering -------------------
 $h3 = New-FakeHome
 $settings3 = Join-Path $h3 ".claude/settings.json"
@@ -127,7 +153,7 @@ if (Test-Path $settings4) {
     Check "fresh install registers hooks"     ($null -ne $after4.hooks) "hooks key missing"
 }
 
-foreach ($h in @($h1, $h2, $h3, $h4)) { Remove-Item -Recurse -Force $h -ErrorAction SilentlyContinue }
+foreach ($h in @($h1, $h2, $h3, $h4, $h5)) { Remove-Item -Recurse -Force $h -ErrorAction SilentlyContinue }
 
 Write-Host ""
 if ($failed -gt 0) {
