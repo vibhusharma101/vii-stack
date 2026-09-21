@@ -287,6 +287,18 @@ Test-Untouched "eslint --fix"       "eslint --fix src"
 Test-Untouched "ruff --fix"         "ruff check --fix ."
 Test-Untouched "rubocop -a"         "rubocop -a"
 Test-Untouched "rubocop -A"         "rubocop -A"
+Test-Untouched "cargo clippy --fix" "cargo clippy --fix"
+Test-Untouched "golangci-lint --fix" "golangci-lint run --fix"
+Test-Untouched "ruff format"        "ruff format ."
+
+# ...but the same tools' read-only modes must still be wrapped. Over-blocking
+# is silent too: nothing breaks, the compression just quietly stops.
+Test-Wrapped "find -name (read-only)"        "find . -name app.ts"    "rtk find . -name app.ts"
+Test-Wrapped "prettier --check (read-only)"  "prettier --check src"   "rtk prettier --check src"
+Test-Wrapped "eslint (read-only)"            "eslint src"             "rtk eslint src"
+Test-Wrapped "ruff check (read-only)"        "ruff check ."           "rtk ruff check ."
+Test-Wrapped "rubocop (read-only)"           "rubocop app"            "rtk rubocop app"
+Test-Wrapped "cargo clippy (read-only)"      "cargo clippy"           "rtk cargo clippy"
 
 # --- ultra mode adds -u -------------------------------------------------------
 Set-Content -Path $CheapSentinel -Value "mode: ultra" -Encoding utf8

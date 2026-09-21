@@ -72,6 +72,22 @@ foreach ($pat in $allow) {
 }
 if (-not $match) { exit 0 }
 
+# Several allowlisted tools also have a mode that writes or deletes files.
+# Everything this hook wraps is auto-approved on the promise that it is
+# read-only, so those invocations must be left alone - they still run, just
+# behind the normal permission prompt instead of silently.
+$writeModes = @(
+    '^find\b.*\s-(delete|exec|execdir|ok|okdir|fprint0?|fprintf|fls)\b',
+    '^prettier\b.*\s(--write|-w)\b',
+    '^(eslint|golangci-lint\s+run)\b.*\s--fix\b',
+    '^ruff\b.*(\s--fix\b|\s+format\b)',
+    '^rubocop\b.*\s(-a|--auto-?correct(-all)?)\b',
+    '^cargo\s+clippy\b.*\s--fix\b'
+)
+foreach ($pat in $writeModes) {
+    if ($trimmed -match $pat) { exit 0 }
+}
+
 # Ultra-compact mode: if the sentinel contains the word "ultra", add -u for
 # even tighter output.
 $prefix = "$rtkInvoke "
