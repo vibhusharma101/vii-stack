@@ -54,6 +54,28 @@ as skipped is information; one silently omitted is a false clean bill.
    counts and version numbers that no longer match. In this repo specifically,
    `.\bin\vii-validate.ps1` covers the skill manifests.
 
+   **A filename in a doc is not a claim that this repo contains it.** Grepping
+   for filenames and testing each for existence produces mostly false
+   positives. Before reporting a missing file, read the line it appears on and
+   confirm the doc is asserting *this repository* ships it. These are not
+   drift:
+
+   | Looks missing | Actually |
+   |---------------|----------|
+   | `deploy.ps1` | A file the **user's own project** is expected to provide |
+   | `settings.json` | `~/.claude/settings.json`, outside the repo |
+   | `.vii/plan.md` | Generated at runtime, gitignored |
+   | `package.json` in an example | Illustrative, not a path |
+   | A path under `~/`, `$HOME`, or an absolute path | Not repo-relative |
+
+   Report a missing file only when the doc presents it as part of this repo —
+   in a directory tree, an install step, or a "this repo contains" list. When
+   unsure, quote the line and say you are unsure rather than asserting drift.
+
+   Directory trees drift in the other direction too: check for real stage or
+   top-level directories the tree **omits**, not just entries it lists that no
+   longer exist.
+
 5. **vii-stack install integrity.** Whether the hooks registered in
    `~/.claude/settings.json` still point at files that exist, whether the skills
    in `~/.claude/skills/` match `skills/` in the repo, and whether
@@ -111,3 +133,6 @@ If nothing is wrong: `healthy. <N> checks passed, <M> skipped.` Then stop.
   network. That is what `full` is for.
 - **Do not report every stale dependency.** Group them, name the count, and
   surface only the ones with advisories or breaking majors.
+- **Do not report a missing file from a grep alone.** Read the line first and
+  confirm the doc claims this repo ships it. A false finding costs the reader
+  more than a missed one, because it teaches them to distrust the report.
