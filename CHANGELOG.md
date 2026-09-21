@@ -10,6 +10,14 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 ## [Unreleased]
 
 ### Fixed
+- **`setup.ps1` corrupted single-element arrays in an existing
+  `settings.json`.** `ConvertTo-HashtableDeep`, added to fix the 5.1 clobber
+  above, hit PowerShell's rule that `return` unwraps a one-element array into a
+  scalar. A hook matcher holding exactly one hook was rewritten from `[{...}]`
+  to `{...}`, which Claude Code refuses to load — taking the whole entry with
+  it — and a one-item `permissions.allow` was flattened the same way. Observed
+  in the wild on an `rtk hook claude` entry. Fixed with `return ,$arr`, and
+  pinned by two cases in `bin/vii-setup-test.ps1`.
 - **A third-party PreToolUse hook could disable `/vii-careful` entirely.**
   `setup.ps1` appended vii-stack's hooks after any already registered, so a
   hook installed ahead of `vii-careful-check` — `rtk hook claude`, which
