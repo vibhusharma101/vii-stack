@@ -10,6 +10,14 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 ## [Unreleased]
 
 ### Fixed
+- **The docs told Windows users to install `rtk` with Homebrew.** `brew` does
+  not exist on Windows, and vii-stack is Windows-only, so `brew install rtk`
+  could never work. It appeared in `CLAUDE.md` — the block `setup.ps1` copies
+  into `~/.claude/CLAUDE.md`, so it propagated to every install — plus
+  `docs/skills.md` and `/vii-cheap`'s own install instructions, where it was
+  listed first of three options. Now `cargo install`, or the install script run
+  from Git Bash (which lands in `~/.rtk/bin`, the path the hook already falls
+  back to).
 - **`/vii-freeze` let edits escape the lock through sibling directories.**
   The hook compared paths with a bare string prefix, so freezing `src/`
   also admitted `src-old/`, `srcbackup/`, or any sibling whose name starts
