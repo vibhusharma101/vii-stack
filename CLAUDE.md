@@ -32,5 +32,5 @@ You have the **vii-stack** skill pack installed. It encodes a `Think → Plan �
 
 **Safety hooks are enforced** — `/vii-careful` must be acknowledged before destructive shell commands; `/vii-freeze <dir>` locks edits to a subtree. Hooks block; skill prompts only advise.
 
-**Cheap mode:** `/vii-cheap on` routes read-heavy shell commands (`git status/log/diff`, `cargo test`, `pytest`, `ls`, `grep`, …) through [`rtk`](https://github.com/rtk-ai/rtk) so their output is compressed 50-90% before it enters context. Requires the `rtk` binary (`brew install rtk`). Per-project, persists across sessions; `/vii-cheap off` to disable, `/vii-cheap gain` for savings stats.
+**Cheap mode:** `/vii-cheap on` routes read-heavy shell commands (`git status/log/diff`, `cargo test`, `pytest`, `ls`, `grep`, …) through [`rtk`](https://github.com/rtk-ai/rtk) so their output is compressed 50-90% before it enters context. Requires the `rtk` binary (`cargo install --git https://github.com/rtk-ai/rtk`, or the install script from Git Bash). Per-project, persists across sessions; `/vii-cheap off` to disable, `/vii-cheap gain` for savings stats.
 <!-- END vii-stack -->

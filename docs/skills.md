@@ -176,7 +176,7 @@ Stages: **Think · Plan · Build · Review · Test · Ship · Reflect · Securit
 **Purpose:** Toggle "cheap mode" — route read-heavy shell commands through [RTK](https://github.com/rtk-ai/rtk) so their output is compressed 50-90% before it reaches the context window.
 **Mechanism:** Writes the sentinel `.vii/cheap-mode`. The PreToolUse hook (`bin/vii-cheap-rewrite.ps1`) rewrites a conservative allowlist of read-only commands (`git status/log/diff`, `cargo test`, `pytest`, `ls`, `grep`, …) to `rtk <cmd>` via `hookSpecificOutput.updatedInput`, but only when `rtk` is on PATH. Write commands, pipelines, and chains are never wrapped.
 **Args:** `on` (default), `off`, `status`, `ultra` (adds `-u`), `gain` (runs `rtk gain` for savings stats).
-**Requires:** the `rtk` binary — `brew install rtk`, `cargo install --git https://github.com/rtk-ai/rtk`, or the install script. Per-project; persists across sessions.
+**Requires:** the `rtk` binary — `cargo install --git https://github.com/rtk-ai/rtk`, or the install script run from Git Bash (it lands in `~/.rtk/bin`, which the hook falls back to when `rtk` is not on PATH). Homebrew is macOS/Linux only and does not apply here. Per-project; persists across sessions.
 
 ---
 

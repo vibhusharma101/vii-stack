@@ -31,9 +31,12 @@ rewrites matching Bash commands to `rtk <cmd>` via `hookSpecificOutput.updatedIn
    silently enable a no-op. Tell the user cheap mode needs the RTK binary and
    give the install options, then ask whether to proceed (the sentinel still
    works once they install it later):
-   - Homebrew: `brew install rtk`
    - Cargo: `cargo install --git https://github.com/rtk-ai/rtk`
-   - Script: `curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh | sh`
+   - Script (Git Bash, not PowerShell — it installs to `~/.rtk/bin`):
+     `curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh | sh`
+
+   Do **not** suggest `brew install rtk`. vii-stack is Windows-only and
+   Homebrew does not run on Windows.
 
    Do not run the install command yourself without the user confirming - it
    pulls and builds third-party software.
