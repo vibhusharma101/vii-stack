@@ -10,6 +10,17 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 ## [Unreleased]
 
 ### Fixed
+- **`/vii-freeze` let edits escape the lock through sibling directories.**
+  The hook compared paths with a bare string prefix, so freezing `src/`
+  also admitted `src-old/`, `srcbackup/`, or any sibling whose name starts
+  with the locked one. It now compares against the lock with a trailing
+  separator.
+- **`/vii-cheap` auto-approved file writes and deletes.** Its allowlist is
+  documented as read-only and everything it wraps skips the permission
+  prompt — but `find -delete`, `prettier --write`, `eslint --fix`,
+  `ruff --fix`, `ruff format`, `rubocop -a`, `cargo clippy --fix` and
+  `golangci-lint run --fix` were wrapped and approved too. These now run
+  behind the normal prompt; the tools' read-only modes are still wrapped.
 - **`setup.ps1` corrupted single-element arrays in an existing
   `settings.json`.** `ConvertTo-HashtableDeep`, added to fix the 5.1 clobber
   above, hit PowerShell's rule that `return` unwraps a one-element array into a
@@ -57,9 +68,13 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
     exact next command. Restore reports drift since the checkpoint.
   - `/vii-skillify` — turn a workflow just performed into a permanent skill,
     registered and validated.
-- `bin/vii-hook-test.ps1` — 16 cases pinning `vii-careful-check` behaviour:
-  real destructive commands block, prose mentioning them does not, and an
-  acknowledged session bypasses.
+- `bin/vii-hook-test.ps1` — covers all three PreToolUse hooks (73 cases).
+  `vii-careful-check`: real destructive commands block, prose mentioning them
+  does not, an acknowledged session bypasses. `vii-freeze-check`: inside the
+  lock allowed, outside blocked, including traversal, sibling-prefix,
+  trailing-separator and BOM-prefixed locks. `vii-cheap-rewrite`: the
+  read-only allowlist is wrapped and approved; write verbs, write modes and
+  shell composition are untouched. Stubs `rtk` on PATH so it runs on CI.
 - `bin/vii-setup-test.ps1` — end-to-end test of the `settings.json` merge
   against a throwaway `HOME`: unrelated keys survive, re-running does not
   duplicate hooks, and malformed JSON aborts without rewriting the file.
