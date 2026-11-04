@@ -1,0 +1,11 @@
+{
+  "name": "vii-stack",
+  "owner": { "name": "vibhusharma101" },
+  "plugins": [
+    {
+      "name": "elephant-goldfish",
+      "source": "./plugins/elephant-goldfish",
+      "description": "Live elephant & goldfish view of your session, plus an animated replay."
+    }
+  ]
+}

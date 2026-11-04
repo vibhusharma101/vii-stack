@@ -134,6 +134,17 @@ Stage artifacts live under `.vii/` in your project (gitignored by default).
 
 How it works, as a page you can share: [`docs/elephant-goldfish.html`](docs/elephant-goldfish.html).
 
+### Watch your own session: the `elephant-goldfish` plugin
+
+A Claude Code plugin that maps a live session as elephant (main agent) and goldfish (subagents). It shows what each one read and returned, and what went into long-term memory.
+
+```
+/plugin marketplace add vibhusharma101/vii-stack
+/plugin install elephant-goldfish@vii-stack
+```
+
+Start a new session after installing. A live pane opens beside the chat, and `/elephant-goldfish replay` opens an animated replay of the session in your browser. Details: [`plugins/elephant-goldfish`](plugins/elephant-goldfish/README.md). The concept as an animated film plus a playable sandbox: [`docs/elephant-goldfish-film.html`](docs/elephant-goldfish-film.html).
+
 ---
 
 ## Architecture

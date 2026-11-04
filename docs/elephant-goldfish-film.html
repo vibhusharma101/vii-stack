@@ -1,0 +1,420 @@
+<title>Elephant &amp; Goldfish</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one cinematic stage (16:9 SVG) under a short title; caption strip and controls sit beneath it like a player. Deliberately single-theme: a night aquarium. */
+:root{
+  color-scheme:dark;
+  --night:#0b1626; --deep:#11233a; --water:#14385a; --water-hi:#1d4d78; --line:#28466a;
+  --ink:#eef4fb; --muted:#93a9c2; --ele:#b9c3e6; --ele-dark:#7f8bb8; --fish:#ff8a3d; --fish-hi:#ffb36b;
+  --vault:#6fd3a0; --warn:#ff6b7a; --packet:#ffe08a;
+  --display:"Fredoka",ui-rounded,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--night);color:var(--ink);font:16px/1.55 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:1040px;margin:0 auto;padding-block:28px 56px}
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:end;justify-content:space-between;margin-bottom:14px}
+h1{font:700 clamp(28px,5vw,44px)/1.05 var(--display);margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--fish)} h1 b{color:var(--ele)}
+.tag{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.modes{display:flex;gap:6px;background:var(--deep);padding:4px;border-radius:12px;border:1px solid var(--line)}
+.modes button{font:600 15px var(--display);padding:8px 16px;border-radius:9px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--fish);color:#1a0d02}
+.stage{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--deep)}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--body)}
+.cap{display:flex;gap:14px;align-items:center;background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:12px;min-height:64px}
+.cap .num{font:600 13px var(--mono);color:var(--fish);white-space:nowrap}
+.cap .txt{font-size:17px;min-width:0}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.btn{font:600 15px var(--display);padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--deep);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--fish)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.hot{background:var(--fish);color:#1a0d02;border-color:var(--fish)}
+button:focus-visible{outline:2px solid var(--fish-hi);outline-offset:2px}
+.chapters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chapters button{font:12px var(--mono);padding:4px 9px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.chapters button[aria-current="true"]{color:var(--ink);border-color:var(--fish)}
+.log{margin-top:12px;font:13px/1.7 var(--mono);color:var(--muted);background:var(--deep);border:1px solid var(--line);border-radius:12px;padding:10px 14px;max-height:150px;overflow:auto}
+.log div:last-child{color:var(--ink)}
+.cta{margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--deep);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card h2{font:600 19px var(--display);margin:0 0 8px}
+.card p{margin:0 0 10px;color:var(--muted);font-size:15px}
+pre{font:13px/1.6 var(--mono);background:var(--night);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0;overflow-x:auto;color:var(--packet)}
+a{color:var(--fish-hi)}
+footer{margin-top:28px;color:var(--muted);font-size:14px}
+</style>
+
+<main>
+  <div class="top">
+    <div>
+      <h1>The <b>elephant</b> remembers.<br>The <em>goldfish</em> forgets.</h1>
+      <p class="tag">How an AI coding session actually thinks: one agent that remembers everything, helper agents that remember nothing, and a vault that outlives them both.</p>
+    </div>
+    <div class="modes" role="group" aria-label="Mode">
+      <button type="button" id="mFilm" aria-pressed="true">▶ Film</button>
+      <button type="button" id="mPlay" aria-pressed="false">🎮 Play</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <svg id="svg" viewBox="0 0 960 540" role="img" aria-label="Animated stage: you, the elephant, the repo, the goldfish tank and the memory vault">
+      <defs>
+        <linearGradient id="waterG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d4d78"/><stop offset="1" stop-color="#11304f"/></linearGradient>
+        <linearGradient id="bgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#11233a"/><stop offset="1" stop-color="#0d1b2e"/></linearGradient>
+      </defs>
+      <rect width="960" height="540" fill="url(#bgG)"/>
+
+      <!-- you -->
+      <g transform="translate(28,36)">
+        <rect width="160" height="92" rx="10" fill="#0b1626" stroke="#28466a"/>
+        <circle cx="14" cy="13" r="4" fill="#ff6b7a"/><circle cx="27" cy="13" r="4" fill="#ffe08a"/><circle cx="40" cy="13" r="4" fill="#6fd3a0"/>
+        <text x="14" y="48" fill="#93a9c2" font-size="13" font-family="JetBrains Mono, monospace">you@terminal</text>
+        <text id="youTxt" x="14" y="72" fill="#eef4fb" font-size="14" font-family="JetBrains Mono, monospace">&gt; _</text>
+      </g>
+
+      <!-- repo files -->
+      <g transform="translate(470,30)">
+        <text x="0" y="0" fill="#93a9c2" font-size="13" font-family="JetBrains Mono, monospace">repo (data)</text>
+        <g id="files"></g>
+      </g>
+
+      <!-- context meter -->
+      <g transform="translate(190,150)">
+        <text x="0" y="0" fill="#93a9c2" font-size="13" font-family="JetBrains Mono, monospace">elephant's context</text>
+        <rect x="0" y="10" width="220" height="16" rx="8" fill="#0b1626" stroke="#28466a"/>
+        <rect id="ctxFill" x="2" y="12" width="0" height="12" rx="6" fill="#b9c3e6"/>
+        <text id="ctxTxt" x="228" y="23" fill="#eef4fb" font-size="13" font-family="JetBrains Mono, monospace">0%</text>
+      </g>
+
+      <!-- elephant -->
+      <g id="ele" transform="translate(300,290)">
+        <g id="eleBody">
+          <rect x="-58" y="30" width="22" height="42" rx="8" fill="#7f8bb8"/><rect x="-20" y="34" width="22" height="40" rx="8" fill="#7f8bb8"/>
+          <rect x="18" y="34" width="22" height="40" rx="8" fill="#7f8bb8"/>
+          <ellipse cx="-12" cy="10" rx="78" ry="56" fill="#b9c3e6"/>
+          <ellipse cx="44" cy="-26" rx="34" ry="42" fill="#7f8bb8"/>
+          <circle cx="66" cy="-30" r="38" fill="#b9c3e6"/>
+          <path d="M96 -18 C 120 0, 118 40, 104 58 C 98 66, 90 60, 96 50 C 106 32, 100 12, 84 0 Z" fill="#b9c3e6"/>
+          <circle cx="78" cy="-40" r="5" fill="#0b1626"/><circle cx="80" cy="-42" r="1.6" fill="#fff"/>
+          <path d="M-88 4 q -16 6 -10 22" stroke="#7f8bb8" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </g>
+        <text x="-10" y="100" text-anchor="middle" fill="#eef4fb" font-size="16" font-family="Fredoka, sans-serif" font-weight="600">Elephant · main session</text>
+      </g>
+      <g id="thought"></g>
+
+      <!-- tank -->
+      <g transform="translate(560,170)">
+        <rect width="372" height="226" rx="16" fill="url(#waterG)" stroke="#2c5f8f"/>
+        <path id="wave" d="M0 18 Q 31 8 62 18 T 124 18 T 186 18 T 248 18 T 310 18 T 372 18" stroke="#3a78ad" stroke-width="2" fill="none"/>
+        <text x="14" y="214" fill="#93a9c2" font-size="13" font-family="JetBrains Mono, monospace">goldfish tank · subagents</text>
+        <text id="tankHint" x="186" y="118" text-anchor="middle" fill="#6f93b8" font-size="14" font-style="italic">empty: goldfish only exist while they work</text>
+      </g>
+      <g id="bubbles"></g>
+      <g id="fishLayer"></g>
+
+      <!-- vault -->
+      <g transform="translate(140,428)">
+        <rect width="420" height="96" rx="14" fill="#0e2a24" stroke="#2f7d5f"/>
+        <text x="14" y="22" fill="#6fd3a0" font-size="13" font-family="JetBrains Mono, monospace">long-term memory vault · outlives sessions</text>
+        <g id="vaultItems"></g>
+      </g>
+      <text id="sessionTxt" x="940" y="526" text-anchor="end" fill="#93a9c2" font-size="13" font-family="JetBrains Mono, monospace">session 1</text>
+      <g id="fx"></g>
+    </svg>
+  </div>
+
+  <div class="cap" aria-live="polite"><span class="num" id="capNum">1 / 10</span><span class="txt" id="capTxt">Press play.</span></div>
+
+  <div id="filmUI">
+    <div class="controls">
+      <button type="button" class="btn hot" id="playBtn">▶ Play film</button>
+      <button type="button" class="btn" id="restartBtn">↺ Restart</button>
+      <button type="button" class="btn" id="speedBtn">Speed 1×</button>
+    </div>
+    <div class="chapters" id="chapters"></div>
+  </div>
+
+  <div id="playUI" hidden>
+    <div class="controls" id="sandbox"></div>
+    <div class="log" id="log"><div>Your session. Press a button. Try spawning a goldfish, then a fork, and compare what each one knows.</div></div>
+  </div>
+
+  <section class="cta">
+    <div class="card">
+      <h2>🐘 Elephant</h2>
+      <p>Your main Claude Code session. Every prompt, file and answer piles into its context until it has to compact. It's great at building, but bad at spotting what it forgot to write down.</p>
+    </div>
+    <div class="card">
+      <h2>🐟 Goldfish</h2>
+      <p>A fresh subagent. It knows only its brief, reads only what that brief points to, reports back, then forgets everything. That makes it a good reviewer: if it can't follow your plan, neither can the next developer.</p>
+    </div>
+    <div class="card">
+      <h2>🗄️ Vault</h2>
+      <p>Memory files, CLAUDE.md and vii-brain. The only things that survive into the next session.</p>
+    </div>
+    <div class="card">
+      <h2>Watch your own session</h2>
+      <p>vii-stack's elephant-goldfish plugin records your real session live and replays it like this.</p>
+      <pre>git clone https://github.com/vibhusharma101/vii-stack
+cd vii-stack; .\setup.ps1
+/vii-goldfish   # review a plan with goldfish</pre>
+    </div>
+  </section>
+
+  <footer>Made with <a href="https://github.com/vibhusharma101/vii-stack">vii-stack</a>, an open-source workflow kit for Claude Code. The pattern comes from Google's <a href="https://github.com/google/elephant-goldfish-model">elephant-goldfish-model</a>.</footer>
+</main>
+
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg', $=function(id){return document.getElementById(id);};
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var speed=1, token=0;
+  function S(tag, attrs, parent){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k, attrs[k]); if(parent) parent.appendChild(e); return e; }
+  function T(text, attrs, parent){ var e=S('text', attrs, parent); e.textContent=text; return e; }
+  var ease=function(p){ return p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2; };
+
+  function stopErr(){ var e=new Error('stopped'); e.stopped=true; return e; }
+  function tween(ms, fn){
+    var my=token;
+    return new Promise(function(res, rej){
+      var dur = ms/speed, t0=performance.now();
+      (function f(t){
+        if (my!==token) return rej(stopErr());
+        var p=Math.min(1,(t-t0)/dur); fn(ease(p));
+        p<1 ? requestAnimationFrame(f) : res();
+      })(t0);
+    });
+  }
+  function wait(ms){ return tween(ms, function(){}); }
+  function place(g,x,y,s){ g.setAttribute('transform','translate('+x+','+y+')'+(s!=null?' scale('+s+')':'')); }
+
+  /* ---------- world state ---------- */
+  var W;
+  var FILES=['auth.ts','plan.md','db.sql','api.ts'];
+  var POS={ you:[108,128], ele:[330,270], vault:[350,470], tank:[746,283] };
+  function reset(){
+    token++;
+    W={ ctx:0, fish:[], vault:0, session:1, fileEls:[], cur:null };
+    ['files','fishLayer','vaultItems','fx','thought','bubbles'].forEach(function(id){ $(id).textContent=''; });
+    FILES.forEach(function(f,i){
+      var g=S('g',{transform:'translate('+(i*110)+',16)'},$('files'));
+      S('rect',{width:96,height:40,rx:7,fill:'#0b1626',stroke:'#28466a'},g);
+      S('path',{d:'M10 10 h12 l5 5 v15 h-17 z',fill:'#93a9c2'},g);
+      T(f,{x:34,y:26,fill:'#eef4fb','font-size':12,'font-family':'JetBrains Mono, monospace'},g);
+      W.fileEls.push([470+i*110+48, 30+16+20]);
+    });
+    $('ele').style.opacity=1; place($('ele'),300,290);
+    setCtx(0,true); $('youTxt').textContent='> _'; $('sessionTxt').textContent='session 1'; tankHint();
+  }
+  function setCtx(v, instant){
+    var from=W.ctx; W.ctx=Math.max(0,Math.min(100,v));
+    var fill=$('ctxFill'), txt=$('ctxTxt'), to=W.ctx;
+    var draw=function(x){ fill.setAttribute('width', 2.16*x); txt.textContent=Math.round(x)+'%'; fill.setAttribute('fill', x>85?'#ff6b7a':'#b9c3e6'); };
+    if (instant){ draw(to); return Promise.resolve(); }
+    return tween(500,function(p){ draw(from+(to-from)*p); });
+  }
+
+  function fly(label, from, to, color, ms){
+    var g=S('g',{},$('fx')), w=Math.max(46, label.length*7.4+18);
+    S('rect',{x:-w/2,y:-13,width:w,height:26,rx:13,fill:color||'#ffe08a'},g);
+    T(label,{x:0,y:5,'text-anchor':'middle',fill:'#1a1204','font-size':12,'font-family':'JetBrains Mono, monospace','font-weight':600},g);
+    return tween(ms||900,function(p){
+      var x=from[0]+(to[0]-from[0])*p, y=from[1]+(to[1]-from[1])*p - Math.sin(p*Math.PI)*60;
+      place(g,x,y);
+    }).then(function(){ g.remove(); }, function(e){ g.remove(); throw e; });
+  }
+  function bob(){ var e=$('eleBody'); return tween(320,function(p){ e.setAttribute('transform','translate(0,'+(-8*Math.sin(p*Math.PI))+')'); }); }
+  function think(text){
+    var t=$('thought'); t.textContent='';
+    if(!text) return;
+    var w=text.length*7.6+28, g=S('g',{transform:'translate(390,200)'},t);
+    S('rect',{x:0,y:-20,width:w,height:34,rx:17,fill:'#eef4fb'},g);
+    S('circle',{cx:-8,cy:20,r:6,fill:'#eef4fb'},g); S('circle',{cx:-18,cy:34,r:3.5,fill:'#eef4fb'},g);
+    T(text,{x:14,y:2,fill:'#0b1626','font-size':13,'font-weight':700},g);
+  }
+
+  function drawFish(fork){
+    var g=S('g',{opacity:0},$('fishLayer'));
+    if (fork){
+      S('ellipse',{cx:0,cy:0,rx:30,ry:22,fill:'#b9c3e6'},g); S('circle',{cx:24,cy:-10,r:15,fill:'#b9c3e6'},g);
+      S('path',{d:'M36 -4 q 10 10 2 22',stroke:'#b9c3e6','stroke-width':6,fill:'none','stroke-linecap':'round'},g);
+      S('circle',{cx:28,cy:-14,r:2.5,fill:'#0b1626'},g);
+      S('rect',{x:-30,y:-44,width:60,height:8,rx:4,fill:'#0b1626'},g);
+      S('rect',{x:-29,y:-43,width:58*W.ctx/100,height:6,rx:3,fill:'#ff6b7a'},g);
+      T('FORK · '+Math.round(W.ctx)+'% memory',{x:0,y:44,'text-anchor':'middle',fill:'#ff6b7a','font-size':12,'font-weight':700},g);
+    } else {
+      S('path',{d:'M-22 0 L-40 -14 L-36 0 L-40 14 Z',fill:'#ff8a3d'},g);
+      S('ellipse',{cx:0,cy:0,rx:26,ry:16,fill:'#ff8a3d'},g);
+      S('path',{d:'M-4 -15 q 8 -10 16 0',fill:'#ffb36b'},g);
+      S('circle',{cx:13,cy:-4,r:4,fill:'#fff'},g); S('circle',{cx:14,cy:-4,r:2,fill:'#0b1626'},g);
+      S('rect',{x:-30,y:-36,width:60,height:8,rx:4,fill:'#0b1626'},g);
+      S('rect',{x:-29,y:-35,width:3,height:6,rx:3,fill:'#ffb36b'},g);
+      T('goldfish · 0% memory',{x:0,y:36,'text-anchor':'middle',fill:'#ffb36b','font-size':12,'font-weight':700},g);
+    }
+    return g;
+  }
+  function spawnFish(fork, brief){
+    var slot=W.fish.length%3, x=640+slot*105, y=250+(slot%2)*50, g=drawFish(fork);
+    var f={g:g,x:x,y:y,fork:fork}; W.fish.push(f); tankHint();
+    var p0=[330,270];
+    return fly(fork?'copy of ALL context':brief, p0, [x,y], fork?'#ff6b7a':'#ffe08a', 1000)
+      .then(function(){ return tween(450,function(p){ place(g,x,y,0.2+0.8*p); g.style.opacity=p; }); })
+      .then(function(){ return f; });
+  }
+  function tankHint(){ $('tankHint').style.opacity = W.fish.length ? 0 : 1; }
+  function label(f, text){
+    if (f.lbl) f.lbl.remove(); if (!text) { f.lbl=null; return; }
+    f.lbl=T(text,{x:f.x,y:f.y-50,'text-anchor':'middle',fill:'#ffe08a','font-size':12.5,'font-weight':700},$('fishLayer'));
+  }
+  function swim(f, ms){ var a=REDUCED?0:1; return tween(ms||900,function(p){ place(f.g, f.x+a*Math.sin(p*Math.PI*2)*14, f.y+a*Math.sin(p*Math.PI*4)*5); }); }
+  function forget(f){
+    for (var i=0;i<6;i++){
+      (function(i){ var b=S('circle',{cx:f.x+(i-3)*6,cy:f.y,r:3+i%3,fill:'none',stroke:'#9fd0ff','stroke-width':1.5},$('bubbles'));
+        tween(1100,function(p){ b.setAttribute('cy', f.y-p*(70+i*8)); b.style.opacity=1-p; }).then(function(){ b.remove(); },function(){ b.remove(); }); })(i);
+    }
+    return tween(700,function(p){ f.g.style.opacity=1-p; place(f.g,f.x,f.y-p*10,1-p*0.3); }).then(function(){ label(f,''); f.g.remove(); W.fish.splice(W.fish.indexOf(f),1); tankHint(); });
+  }
+  function storeVault(label){
+    var i=W.vault++, x=14+(i%3)*134, y=34+Math.floor(i/3)%2*30;
+    return fly(label,[330,270],[140+x+60,428+y+12],'#6fd3a0',900).then(function(){
+      var g=S('g',{transform:'translate('+x+','+y+')'},$('vaultItems'));
+      S('rect',{width:124,height:24,rx:6,fill:'#14382d',stroke:'#6fd3a0'},g);
+      T(label.length>17?label.slice(0,16)+'…':label,{x:8,y:16,fill:'#bff0d6','font-size':11.5,'font-family':'JetBrains Mono, monospace'},g);
+    });
+  }
+  function typeYou(text){
+    var t=$('youTxt'); return tween(500,function(p){ t.textContent='> '+text.slice(0,Math.ceil(text.length*p)); });
+  }
+
+  /* ---------- actions (shared by film and game) ---------- */
+  var A={
+    ask:function(){ return typeYou('add retries').then(function(){ return fly('prompt',POS.you,[300,250]); }).then(bob).then(function(){ return setCtx(W.ctx+10); }); },
+    read:function(i){ var f=W.fileEls[i==null?Math.floor(Math.random()*4):i]; return fly(FILES[W.fileEls.indexOf(f)], f, [300,250], '#9fd0ff').then(bob).then(function(){ return setCtx(W.ctx+9); }); },
+    spawnG:function(){
+      think('need fresh eyes');
+      return wait(700).then(function(){ think(''); return spawnFish(false,'brief: review plan.md'); })
+        .then(function(f){ W.cur=f; label(f,'knows only: “review plan.md”'); return swim(f,1800); });
+    },
+    workG:function(){
+      var f=W.cur || null;
+      var start = f ? Promise.resolve(f) : A.spawnG().then(function(){ return W.cur; });
+      return start.then(function(x){ f=x; label(f,'reading plan.md…'); return fly('plan.md', W.fileEls[1], [f.x,f.y], '#9fd0ff'); })
+        .then(function(){ return swim(f,2200); })
+        .then(function(){ label(f,'found 3 gaps'); return swim(f,900); })
+        .then(function(){ return fly('report: 3 gaps',[f.x,f.y],[300,250],'#ffb36b'); })
+        .then(function(){ label(f,'forgetting everything…'); return wait(900); })
+        .then(function(){ W.cur=null; return Promise.all([forget(f), setCtx(W.ctx+5)]); });
+    },
+    goldfish:function(){ return A.spawnG().then(A.workG); },
+    fork:function(){
+      var f; return spawnFish(true).then(function(x){ f=x; label(f,'knows everything the elephant knows'); return swim(f,2200); })
+        .then(function(){ return fly('same blind spots',[f.x,f.y],[300,250],'#ff6b7a'); })
+        .then(function(){ return Promise.all([forget(f), setCtx(W.ctx+4)]); });
+    },
+    save:function(){ var labels=['retry cap = 5','use LISTEN/NOTIFY','tests before ship','auth in middleware']; return storeVault(labels[W.vault%4]); },
+    compact:function(){
+      var b=$('eleBody');
+      return setCtx(Math.max(W.ctx,92)).then(function(){ think('summarizing old turns…'); return tween(700,function(p){ b.setAttribute('transform','scale('+(1-0.12*Math.sin(p*Math.PI))+','+(1+0.06*Math.sin(p*Math.PI))+')'); }); })
+        .then(function(){ think(''); return setCtx(30); });
+    },
+    newSession:function(){
+      var e=$('ele');
+      think('');
+      return tween(700,function(p){ e.style.opacity=1-p; })
+        .then(function(){ setCtx(0,true); W.session++; $('sessionTxt').textContent='session '+W.session; $('youTxt').textContent='> _'; return tween(700,function(p){ e.style.opacity=p; }); })
+        .then(function(){ if (!W.vault) return; return fly('recall', [350,470], [300,250], '#6fd3a0').then(function(){ return setCtx(6); }); });
+    }
+  };
+
+  /* ---------- film ---------- */
+  var SCENES=[
+    ['You ask for something. The prompt lands in the elephant’s context.', function(){ return A.ask(); }],
+    ['The elephant reads the repo. Every file it opens stays in its memory, and the context bar climbs.', function(){ return A.read(0).then(function(){ return A.read(1); }).then(function(){ return A.read(2); }); }],
+    ['It wants fresh eyes, so it spawns a goldfish: a subagent that starts with only a one-line brief.', function(){ return A.spawnG(); }],
+    ['The goldfish reads just what the brief points to, finds the gaps, reports back, and forgets everything.', function(){ return A.workG(); }],
+    ['A fork is different. It copies the elephant’s whole memory, so it carries the same blind spots.', function(){ return A.fork(); }],
+    ['What matters gets saved to the vault: memory files, CLAUDE.md, vii-brain.', function(){ return A.save().then(A.save); }],
+    ['The elephant keeps working. Context fills up…', function(){ return A.read(3).then(function(){ return A.read(0); }).then(function(){ return A.read(2); }).then(function(){ return setCtx(90); }); }],
+    ['…so it compacts: old turns get squeezed into a summary, and details are lost.', function(){ return A.compact(); }],
+    ['The session ends. The elephant’s context is gone. The vault is not, so the next session recalls it.', function(){ return A.newSession(); }],
+    ['That’s every Claude Code session. vii-stack lets you watch your own. Now press Play and run one yourself.', function(){ return wait(1800); }]
+  ];
+  var scene=0, playing=false;
+  var chapters=$('chapters');
+  SCENES.forEach(function(s,i){ var b=document.createElement('button'); b.type='button'; b.textContent=(i+1)+''; b.setAttribute('aria-label','Chapter '+(i+1));
+    b.onclick=function(){ jump(i); }; chapters.appendChild(b); });
+  function caption(i){ $('capNum').textContent=(i+1)+' / '+SCENES.length; $('capTxt').textContent=SCENES[i][0];
+    Array.prototype.forEach.call(chapters.children,function(b,j){ b.setAttribute('aria-current', j===i); }); }
+
+  // Re-run earlier scenes instantly so any chapter starts from the right world.
+  function fastForward(n){
+    var saved=speed; speed=1000; var p=Promise.resolve();
+    for (var i=0;i<n;i++) (function(i){ p=p.then(function(){ return SCENES[i][1](); }); })(i);
+    return p.then(function(){ speed=saved; }, function(e){ speed=saved; throw e; });
+  }
+  function run(){
+    var my=token; playing=true; $('playBtn').textContent='❚❚ Pause';
+    (function next(){
+      if (my!==token) return;
+      if (scene>=SCENES.length){ playing=false; $('playBtn').textContent='▶ Replay film'; return; }
+      caption(scene);
+      SCENES[scene][1]().then(function(){ return wait(900); }).then(function(){ scene++; next(); }, function(e){ if(!e.stopped) console.error(e); });
+    })();
+  }
+  function pause(){ token++; playing=false; $('playBtn').textContent='▶ Play film'; }
+  function jump(i){
+    reset(); scene=i; caption(i); var my=token;
+    fastForward(i).then(function(){ if (my===token) run(); }, function(){});
+  }
+  $('playBtn').onclick=function(){
+    if (playing){ pause(); return; }
+    if (scene>=SCENES.length) scene=0;
+    jump(scene);
+  };
+  $('restartBtn').onclick=function(){ jump(0); };
+  $('speedBtn').onclick=function(){ speed = speed===1?2:speed===2?4:1; $('speedBtn').textContent='Speed '+speed+'×'; };
+
+  /* ---------- play mode (the game) ---------- */
+  var busy=false, sandbox=$('sandbox');
+  var MOVES=[
+    ['💬 Ask','ask','You prompted. The elephant remembers it.'],
+    ['📄 Read a file','read','The elephant read a file. It stays in its context.'],
+    ['🐟 Spawn goldfish','goldfish','A goldfish got a brief, reviewed plan.md, reported back and forgot.'],
+    ['🐘 Fork','fork','A fork copied all the context, so it came back with the same blind spots.'],
+    ['🗄️ Save memory','save','Saved to the vault. It survives the session.'],
+    ['🗜️ Compact','compact','Context squeezed. Older details are now a summary.'],
+    ['🌅 New session','newSession','New session: context empty, vault recalled.']
+  ];
+  MOVES.forEach(function(m){
+    var b=document.createElement('button'); b.type='button'; b.className='btn'; b.textContent=m[0];
+    b.onclick=function(){
+      if (busy) return; busy=true; setBusy(true);
+      $('capNum').textContent='you'; $('capTxt').textContent=m[2];
+      A[m[1]]().then(done, function(e){ done(); if(!e.stopped) console.error(e); });
+      function done(){ busy=false; setBusy(false);
+        var d=document.createElement('div'); d.textContent='session '+W.session+' · '+m[2]+'  [context '+Math.round(W.ctx)+'%, vault '+W.vault+']';
+        $('log').appendChild(d); $('log').scrollTop=1e6; }
+    };
+    sandbox.appendChild(b);
+  });
+  function setBusy(v){ Array.prototype.forEach.call(sandbox.children,function(b){ b.disabled=v; }); }
+
+  function mode(film){
+    $('mFilm').setAttribute('aria-pressed',film); $('mPlay').setAttribute('aria-pressed',!film);
+    $('filmUI').hidden=!film; $('playUI').hidden=film;
+    pause(); reset(); busy=false; setBusy(false); scene=0;
+    if (film){ caption(0); } else { $('capNum').textContent='you'; $('capTxt').textContent='You are the developer. Drive the session with the buttons below.'; }
+  }
+  $('mFilm').onclick=function(){ mode(true); };
+  $('mPlay').onclick=function(){ mode(false); };
+
+  reset(); caption(0);
+  if (!REDUCED) setTimeout(function(){ if (!playing && scene===0 && !$('filmUI').hidden) jump(0); }, 700);
+})();
+</script>

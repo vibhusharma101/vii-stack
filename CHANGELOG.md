@@ -16,6 +16,12 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
   The elephant sorts each finding into FIX or CONTEST and renders a
   self-contained visual HTML report. Ships with `docs/elephant-goldfish.html`,
   a page you can share that explains the pattern.
+- **`elephant-goldfish` plugin** (`plugins/elephant-goldfish`, installable via
+  `.claude-plugin/marketplace.json`). A live pane that splits the session into
+  elephant, goldfish and long-term memory, plus `/elephant-goldfish replay`
+  for an animated HTML replay of the recorded session.
+- `docs/elephant-goldfish-film.html`: an animated film and playable sandbox
+  that explains the pattern.
 
 ### Fixed
 - **The docs told Windows users to install `rtk` with Homebrew.** `brew` does

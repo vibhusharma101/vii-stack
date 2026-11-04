@@ -1,0 +1,8 @@
+{
+  "name": "elephant-goldfish",
+  "version": "0.1.0",
+  "description": "Live pane that maps your session as elephant (main agent + long-term memory) and goldfish (zero-context subagents): what each one read, stored and returned.",
+  "license": "MIT",
+  "author": { "name": "vibhusharma101" },
+  "types": "./types/index.d.ts"
+}
