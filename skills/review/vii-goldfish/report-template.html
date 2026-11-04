@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldfish Review</title>
+<!--
+  vii-goldfish visual report. Self-contained: no network, no build step.
+  /vii-goldfish copies this file and replaces ONLY the JSON in #egm-data.
+
+  Data shape:
+  {
+    "doc": "path of the reviewed doc",
+    "date": "YYYY-MM-DD",
+    "elephant": {
+      "knew": ["things the elephant had in context that the doc may not say"],
+      "predicted": ["the 3 stumbling points it expected"]
+    },
+    "goldfish": [
+      { "lens": "gaps", "question": "what the lens asks",
+        "findings": [
+          { "sev": "HIGH|MED|LOW", "where": "quote or section",
+            "issue": "what is missing", "need": "what they would need",
+            "verdict": "FIX|CONTEST", "note": "edit or reason",
+            "predicted": true }
+        ] }
+    ]
+  }
+-->
+<style>
+:root{
+  --bg:#f7f6f2;--panel:#fff;--ink:#1d1d1b;--muted:#6b6a65;--line:#e4e2db;
+  --ele:#6b5fa8;--ele-soft:#eeebf8;--gold:#d9822b;--gold-soft:#fcefe0;
+  --high:#c0392b;--med:#b7791f;--low:#5f7d8e;--fix:#2f7d4f;--contest:#7a7a7a;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151513;--panel:#1f1f1c;--ink:#ecebe6;--muted:#9c9b94;--line:#33322e;
+  --ele:#a99cf0;--ele-soft:#2a2640;--gold:#f0a456;--gold-soft:#3a2a18;
+  --high:#ef6b5c;--med:#e0a843;--low:#8fb0c2;--fix:#5cc08a;--contest:#9a9a9a;}}
+:root[data-theme="dark"]{
+  --bg:#151513;--panel:#1f1f1c;--ink:#ecebe6;--muted:#9c9b94;--line:#33322e;
+  --ele:#a99cf0;--ele-soft:#2a2640;--gold:#f0a456;--gold-soft:#3a2a18;
+  --high:#ef6b5c;--med:#e0a843;--low:#8fb0c2;--fix:#5cc08a;--contest:#9a9a9a;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:17px;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 28px;word-break:break-all}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.stat b{display:block;font-size:26px}
+.stat span{color:var(--muted);font-size:13px}
+.split{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:28px}
+@media (max-width:760px){.split{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.ele{border-top:4px solid var(--ele)}
+.gold{border-top:4px solid var(--gold)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px}
+.tag.ele{background:var(--ele-soft);color:var(--ele);border:0}
+.tag.gold{background:var(--gold-soft);color:var(--gold);border:0}
+ul{margin:6px 0 14px;padding-left:18px}
+.fishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.fish{border:1px dashed var(--gold);border-radius:8px;padding:10px;font-size:13px}
+.fish b{display:block;color:var(--gold)}
+.find{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--low);
+  border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.find.HIGH{border-left-color:var(--high)} .find.MED{border-left-color:var(--med)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;font-size:13px}
+.sev{font-weight:700}.sev.HIGH{color:var(--high)}.sev.MED{color:var(--med)}.sev.LOW{color:var(--low)}
+.v{margin-left:auto;font-weight:700;font-size:12px;padding:2px 8px;border-radius:4px;border:1px solid}
+.v.FIX{color:var(--fix)} .v.CONTEST{color:var(--contest)}
+.where{color:var(--muted);font-style:italic}
+.note{color:var(--muted);font-size:13px;margin-top:6px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.filters button{font:inherit;font-size:13px;padding:5px 12px;border-radius:99px;cursor:pointer;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.missed{font-size:11px;font-weight:700;color:var(--gold)}
+footer{margin-top:40px;color:var(--muted);font-size:13px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+  <h1>🐘 Elephant &amp; 🐟 Goldfish review</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="split">
+    <section class="box ele">
+      <span class="tag ele">Elephant · full memory</span>
+      <h2 style="margin-top:10px">What the author knew</h2>
+      <ul id="knew"></ul>
+      <h2>What it predicted readers would trip on</h2>
+      <ul id="pred"></ul>
+    </section>
+    <section class="box gold">
+      <span class="tag gold">Goldfish · zero memory</span>
+      <h2 style="margin-top:10px">Saw only the document</h2>
+      <p style="margin:0 0 12px;color:var(--muted);font-size:14px">
+        Each goldfish was a fresh subagent with no conversation history,
+        reading the doc through one lens.</p>
+      <div class="fishes" id="fishes"></div>
+    </section>
+  </div>
+
+  <h2>Findings</h2>
+  <div class="filters" id="filters"></div>
+  <div id="findings"></div>
+
+  <footer>Generated by <code>/vii-goldfish</code> ·
+    <a href="https://github.com/vibhusharma101/vii-stack">vii-stack</a> ·
+    pattern from <a href="https://github.com/google/elephant-goldfish-model">elephant-goldfish-model</a></footer>
+</main>
+
+<script id="egm-data" type="application/json">
+{
+  "doc": ".vii/plan.md (sample data)",
+  "date": "2026-11-04",
+  "elephant": {
+    "knew": ["We chose Postgres LISTEN/NOTIFY over Redis last week", "Sync must finish under 5 s on mobile", "The legacy /v1 endpoint stays up until March"],
+    "predicted": ["Migration order", "Rate limits", "Auth token refresh"]
+  },
+  "goldfish": [
+    {"lens":"comprehension","question":"Explain it back. Where did you guess?","findings":[
+      {"sev":"HIGH","where":"§3 \"the queue\"","issue":"Which queue? Two are mentioned in §1.","need":"Name the queue and its owner.","verdict":"FIX","note":"Replace with \"the sync_jobs Postgres queue\"."}]},
+    {"lens":"gaps","question":"What does an implementer need that is missing?","findings":[
+      {"sev":"HIGH","where":"§4 retry with backoff","issue":"No attempt cap or terminal state.","need":"Max attempts and what happens after.","verdict":"FIX","note":"Add: 5 attempts, then mark job failed and alert."},
+      {"sev":"MED","where":"§2 migration","issue":"Order of the two migrations is unstated.","need":"Explicit sequence.","verdict":"FIX","note":"Add numbered steps.","predicted":true}]},
+    {"lens":"buildability","question":"Could you start coding tomorrow?","findings":[
+      {"sev":"HIGH","where":"/sync endpoint","issue":"No error response contract.","need":"Status codes and body shape.","verdict":"FIX","note":"Add error table."}]},
+    {"lens":"zoom-out","question":"Is this the right problem?","findings":[
+      {"sev":"LOW","where":"§1","issue":"A cron job might be simpler than a worker.","need":"Why a worker.","verdict":"CONTEST","note":"§1 para 2 covers the 5 s latency need."}]}
+  ]
+}
+</script>
+<script>
+(function(){
+  var d = JSON.parse(document.getElementById('egm-data').textContent);
+  function el(tag, cls, text){ var e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+  function list(id, items){ var ul=document.getElementById(id); (items||[]).forEach(function(t){ ul.appendChild(el('li',null,t)); }); }
+
+  document.getElementById('sub').textContent = d.doc + (d.date ? ' · ' + d.date : '');
+  list('knew', d.elephant && d.elephant.knew);
+  list('pred', d.elephant && d.elephant.predicted);
+
+  var all = [];
+  (d.goldfish||[]).forEach(function(g){
+    var f = el('div','fish'); f.appendChild(el('b',null,'🐟 ' + g.lens));
+    f.appendChild(el('span',null,g.question)); document.getElementById('fishes').appendChild(f);
+    (g.findings||[]).forEach(function(x){ x.lens=g.lens; all.push(x); });
+  });
+  var rank={HIGH:0,MED:1,LOW:2}; all.sort(function(a,b){ return (rank[a.sev]||3)-(rank[b.sev]||3); });
+
+  var count=function(p){ return all.filter(p).length; };
+  var npred=(d.elephant&&d.elephant.predicted||[]).length;
+  [[ (d.goldfish||[]).length, 'goldfish' ],
+   [ all.length, 'findings' ],
+   [ count(function(x){return x.sev==='HIGH';}), 'high severity' ],
+   [ count(function(x){return x.verdict==='FIX';}) + ' / ' + count(function(x){return x.verdict==='CONTEST';}), 'fix / contest' ],
+   [ count(function(x){return x.predicted;}) + ' of ' + npred, 'predictions confirmed' ],
+   [ count(function(x){return !x.predicted;}), 'blind spots found' ]
+  ].forEach(function(s){ var b=el('div','stat'); b.appendChild(el('b',null,String(s[0]))); b.appendChild(el('span',null,s[1])); document.getElementById('stats').appendChild(b); });
+
+  var filter='all', box=document.getElementById('findings');
+  function render(){
+    box.textContent='';
+    all.filter(function(x){ return filter==='all'||x.sev===filter||x.verdict===filter||x.lens===filter; })
+       .forEach(function(x){
+      var c=el('div','find '+x.sev), r=el('div','row');
+      r.appendChild(el('span','sev '+x.sev,x.sev)); r.appendChild(el('span',null,'🐟 '+x.lens));
+      r.appendChild(el('span','where',x.where));
+      if(!x.predicted) r.appendChild(el('span','missed','BLIND SPOT'));
+      r.appendChild(el('span','v '+x.verdict,x.verdict)); c.appendChild(r);
+      c.appendChild(el('div',null,x.issue + (x.need ? ' Needs: ' + x.need : '')));
+      if(x.note) c.appendChild(el('div','note','🐘 '+x.note));
+      box.appendChild(c);
+    });
+    if(!box.firstChild) box.appendChild(el('p','note','No findings match.'));
+  }
+  var opts=['all','HIGH','MED','LOW','FIX','CONTEST'].concat((d.goldfish||[]).map(function(g){return g.lens;}));
+  opts.forEach(function(o){
+    var b=el('button',null,o); b.type='button'; b.setAttribute('aria-pressed',o===filter);
+    b.onclick=function(){ filter=o; Array.prototype.forEach.call(document.querySelectorAll('.filters button'),function(z){ z.setAttribute('aria-pressed', z.textContent===o); }); render(); };
+    document.getElementById('filters').appendChild(b);
+  });
+  render();
+})();
+</script>
+</body>
+</html>

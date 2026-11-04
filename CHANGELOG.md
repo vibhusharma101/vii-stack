@@ -9,6 +9,14 @@ command was renamed or removed, or `setup.ps1` needs a manual step on upgrade.
 
 ## [Unreleased]
 
+### Added
+- **`/vii-goldfish`: elephant-and-goldfish review** (after Google's
+  [elephant-goldfish-model](https://github.com/google/elephant-goldfish-model)).
+  Fresh zero-context subagents review a plan or spec through separate lenses.
+  The elephant sorts each finding into FIX or CONTEST and renders a
+  self-contained visual HTML report. Ships with `docs/elephant-goldfish.html`,
+  a page you can share that explains the pattern.
+
 ### Fixed
 - **The docs told Windows users to install `rtk` with Homebrew.** `brew` does
   not exist on Windows, and vii-stack is Windows-only, so `brew install rtk`

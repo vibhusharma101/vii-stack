@@ -1,0 +1,221 @@
+<title>Elephant &amp; Goldfish</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; two-lane "memory" panels (elephant left, goldfish right) recur through the page. */
+:root{
+  --bg:#eef2f1; --surface:#ffffff; --ink:#15201f; --muted:#56635f; --line:#d3dcda;
+  --ele:#4a5a78; --ele-soft:#e3e8f1; --fish:#e2701d; --fish-soft:#fdeadb; --water:#2c7a7b;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#172221; --ink:#e4ecea; --muted:#9aaba7; --line:#2a3836;
+  --ele:#9fb2d8; --ele-soft:#1f2a3d; --fish:#ff9a4d; --fish-soft:#3a2414; --water:#5fc0c0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#172221; --ink:#e4ecea; --muted:#9aaba7; --line:#2a3836;
+  --ele:#9fb2d8; --ele-soft:#1f2a3d; --fish:#ff9a4d; --fish-soft:#3a2414; --water:#5fc0c0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;padding-block:48px 72px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(34px,6vw,54px);margin:0 0 14px;font-weight:700}
+h1 .e{color:var(--ele)} h1 .f{color:var(--fish)}
+h2{font-size:26px;margin:56px 0 12px;font-weight:700}
+h3{font-size:18px;margin:28px 0 8px}
+p{max-width:68ch;margin:0 0 14px}
+.lede{font-size:19px;color:var(--muted)}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--water);margin-bottom:10px}
+code{font:14px var(--mono);background:var(--surface);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.wrap{overflow-x:auto;margin:14px 0 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:15px;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:600 12px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.ele{border-left:3px solid var(--ele)} td.fish{border-left:3px solid var(--fish)}
+pre{font:13.5px/1.55 var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;margin:12px 0 18px}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:620px){.lanes{grid-template-columns:1fr}}
+.lane{min-width:0;border-radius:10px;padding:14px 16px;border:1px solid var(--line);background:var(--surface)}
+.lane.ele{border-top:4px solid var(--ele)} .lane.fish{border-top:4px solid var(--fish)}
+.lane h4{margin:0 0 8px;font:600 13px var(--mono);letter-spacing:.04em;text-transform:uppercase}
+.lane.ele h4{color:var(--ele)} .lane.fish h4{color:var(--fish)}
+.lane ul{margin:0;padding-left:18px;font-size:14.5px}
+.lane li.new{font-weight:600}
+.lane .empty{color:var(--muted);font-size:14px;font-style:italic}
+.stepper{margin:16px 0 8px}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.steps button{font:500 13px var(--mono);padding:6px 11px;border-radius:6px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.steps button[aria-pressed="true"]{background:var(--water);border-color:var(--water);color:var(--bg)}
+.steps button:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+.caption{font-size:15px;margin:0 0 12px;min-height:3em}
+.caption b{font-family:var(--display)}
+.disk{margin-top:12px;font:13px var(--mono);color:var(--muted)}
+.disk span{color:var(--ink)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 20px}
+.flow div{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:13px var(--mono)}
+.flow i{color:var(--muted);font-style:normal}
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+a{color:var(--water)}
+@media (prefers-reduced-motion:no-preference){.lane li.new{animation:in .35s ease-out}@keyframes in{from{background:var(--fish-soft)}to{background:transparent}}}
+</style>
+
+<main>
+  <div class="eyebrow">vii-stack · /vii-goldfish</div>
+  <h1>Design with an <span class="e">elephant</span>. Review with a <span class="f">goldfish</span>.</h1>
+  <p class="lede">The agent that wrote your plan remembers too much to review it. It reads "the queue" and knows which queue you mean. The engineer or agent who builds from the plan won't know. So the plan goes to reviewers who remember nothing, and they point out every place it relies on context that was never written down.</p>
+
+  <h2>Who's who</h2>
+  <div class="wrap"><table>
+    <tr><th>Role</th><th>Remembers</th><th>Sees</th><th>Job</th></tr>
+    <tr><td class="ele"><b>Elephant</b><br>your main Claude session</td><td>The whole conversation, the decisions, the dead ends, the repo it has read</td><td>Everything</td><td>Draft the doc. Triage the review. Edit the doc.</td></tr>
+    <tr><td class="fish"><b>Goldfish</b><br>a fresh subagent, one per lens</td><td>Nothing. Starts empty, and its context is gone once it reports.</td><td>The doc and the repo files it links to</td><td>Read through one lens. Report where it had to guess.</td></tr>
+    <tr><td><b>You</b></td><td>What matters to the product</td><td>The doc, the findings and the report</td><td>Approve fixes, make trade-offs, decide what gets built</td></tr>
+  </table></div>
+
+  <h2>How to use it</h2>
+  <p>In any project where vii-stack is installed:</p>
+  <div class="wrap"><table>
+    <tr><th>Step</th><th>You run</th><th>Who acts</th><th>Result</th></tr>
+    <tr><td>1</td><td><code>/vii-office-hours</code> or <code>/vii-spec</code></td><td class="ele">Elephant + you</td><td>Brief or spec in <code>.vii/</code></td></tr>
+    <tr><td>2</td><td><code>/vii-plan-eng</code> or <code>/vii-autoplan</code></td><td class="ele">Elephant</td><td><code>.vii/plan.md</code></td></tr>
+    <tr><td>3</td><td><code>/vii-goldfish</code> (or <code>/vii-goldfish docs/design.md</code>)</td><td class="fish">3-5 goldfish, in parallel</td><td>Findings, one list per lens</td></tr>
+    <tr><td>4</td><td>(automatic)</td><td class="ele">Elephant</td><td>Each finding marked FIX or CONTEST, written to <code>.vii/goldfish/plan.md</code> and <code>plan.html</code></td></tr>
+    <tr><td>5</td><td>Approve the fixes you agree with</td><td>You</td><td>The doc gets edited. At most one more goldfish pass.</td></tr>
+    <tr><td>6</td><td>Build from the doc</td><td class="ele">Elephant</td><td>Code that matches a plan a stranger could follow</td></tr>
+  </table></div>
+
+  <h3>The lenses</h3>
+  <div class="wrap"><table>
+    <tr><th>Lens</th><th>The goldfish asks</th><th>Catches</th></tr>
+    <tr><td><code>comprehension</code></td><td>Explain it back in your own words. Where did you have to guess?</td><td>Undefined terms, pronouns with no clear referent</td></tr>
+    <tr><td><code>gaps</code></td><td>What does an implementer need that isn't here?</td><td>Missing error cases, limits, owners, inputs</td></tr>
+    <tr><td><code>buildability</code></td><td>Could you start coding tomorrow? What's your first question?</td><td>Plans that describe a goal without saying how to build it</td></tr>
+    <tr><td><code>zoom-out</code></td><td>Is this the right problem? What simpler option is missing?</td><td>Over-built solutions</td></tr>
+    <tr><td><code>security</code> (optional)</td><td>What could leak, be forged, or be abused?</td><td>Auth and secret-handling gaps</td></tr>
+  </table></div>
+
+  <h2>What each side holds during a session</h2>
+  <p>Step through a single <code>/vii-goldfish</code> run. Bold items are new at that step. The main thing to notice is that the goldfish lane starts empty every time.</p>
+  <div class="stepper">
+    <div class="steps" id="steps" role="group" aria-label="Session steps"></div>
+    <p class="caption" id="caption" aria-live="polite"></p>
+    <div class="lanes">
+      <div class="lane ele"><h4>🐘 Elephant's context</h4><ul id="eleList"></ul></div>
+      <div class="lane fish"><h4>🐟 Goldfish context</h4><ul id="fishList"></ul><p class="empty" id="fishEmpty"></p></div>
+    </div>
+    <div class="disk" id="disk"></div>
+  </div>
+
+  <h2>How the visual report is built</h2>
+  <p>The HTML report is not written by hand on each run. The skill includes one fixed template, <code>report-template.html</code>. On each run the elephant only fills in a block of JSON, and the template's script draws the page from that JSON. So every report looks the same, and you can open any of them offline with a double-click.</p>
+  <div class="flow">
+    <div>goldfish reports</div><i>→</i><div>elephant triage</div><i>→</i><div>JSON</div><i>→</i><div>&lt;script id="egm-data"&gt;</div><i>→</i><div>template JS renders</div><i>→</i><div>.vii/goldfish/&lt;slug&gt;.html</div>
+  </div>
+  <pre>{
+  "doc": ".vii/plan.md",
+  "date": "2026-11-04",
+  "elephant": {
+    "knew":      ["We chose Postgres LISTEN/NOTIFY over Redis"],   // elephant's memory
+    "predicted": ["Migration order", "Rate limits"]               // written BEFORE review
+  },
+  "goldfish": [
+    { "lens": "gaps", "question": "What does an implementer need?",
+      "findings": [
+        { "sev": "HIGH", "where": "§4 retry with backoff",
+          "issue": "No attempt cap", "need": "Max attempts + terminal state",   // goldfish wrote this
+          "verdict": "FIX", "note": "Add: 5 attempts, then fail + alert",       // elephant wrote this
+          "predicted": false }                                                 // a blind spot
+      ] }
+  ]
+}</pre>
+  <div class="wrap"><table>
+    <tr><th>JSON field</th><th>Written by</th><th>Shows up as</th></tr>
+    <tr><td><code>elephant.knew</code></td><td class="ele">Elephant</td><td>"What the author knew" panel: context that lived only in the session</td></tr>
+    <tr><td><code>elephant.predicted</code></td><td class="ele">Elephant, before any goldfish runs</td><td>"What it predicted readers would trip on" list</td></tr>
+    <tr><td><code>goldfish[].lens</code>, <code>question</code></td><td class="fish">Skill (one per subagent)</td><td>One card per goldfish in the "Saw only the document" panel</td></tr>
+    <tr><td><code>findings[].sev / where / issue / need</code></td><td class="fish">Goldfish</td><td>Finding cards with a severity stripe</td></tr>
+    <tr><td><code>findings[].verdict / note</code></td><td class="ele">Elephant</td><td>FIX or CONTEST badge and the 🐘 note</td></tr>
+    <tr><td><code>findings[].predicted</code></td><td class="ele">Elephant (matches against prediction)</td><td>The BLIND SPOT tag and the "predictions confirmed" count</td></tr>
+  </table></div>
+  <p>The stat tiles at the top of the report are worked out in the browser from the same JSON: goldfish count, findings, HIGHs, fix vs contest, and predictions confirmed vs blind spots found. Filter buttons narrow the list by severity, verdict or lens. Text goes into the page with <code>textContent</code>, never as raw HTML, so a goldfish that quotes markup can't break the page.</p>
+
+  <h2>For developers: how it works underneath</h2>
+  <p>In Claude Code the goldfish are plain <code>Agent</code> tool calls. They're all sent in one message, so they run in parallel, and each one starts as a fresh agent. The whole pattern depends on one rule: <b>the goldfish prompt carries no context</b>. It gets a file path, a lens and an output format, and nothing else.</p>
+  <div class="wrap"><table>
+    <tr><th>Choice</th><th>Why</th></tr>
+    <tr><td>Fresh subagent, never a fork</td><td>A fork inherits the elephant's memory, so it would just be a second elephant</td></tr>
+    <tr><td>No summary in the prompt</td><td>A summary leaks exactly the context you're testing for. If it matters, it belongs in the doc.</td></tr>
+    <tr><td>Doc plus its links, no repo search</td><td>That's how an implementer starting from the doc would read it</td></tr>
+    <tr><td>Max 6 findings per goldfish</td><td>Keeps it to the worst problems. Goldfish are noisy by design.</td></tr>
+    <tr><td>Stop if subagents are unavailable</td><td>A review run in the author's own context isn't a goldfish review</td></tr>
+  </table></div>
+  <h3>Using the pattern in your own app</h3>
+  <p>Outside Claude Code, a goldfish is just an API call whose message history holds nothing but the document. Here's the same idea with the Anthropic TypeScript SDK:</p>
+  <pre>import Anthropic from "@anthropic-ai/sdk";
+const client = new Anthropic();
+
+const lenses = {
+  comprehension: "Explain it back. Where did you have to guess?",
+  gaps: "What does an implementer need that is not here?",
+  buildability: "Could you start coding tomorrow? First question?",
+};
+
+// Each call starts with an empty history: that is the goldfish.
+const reviews = await Promise.all(Object.entries(lenses).map(([lens, q]) =>
+  client.messages.create({
+    model: "claude-opus-5-5",
+    max_tokens: 2000,
+    messages: [{ role: "user",
+      content: `You have never seen this project.\nLens: ${lens} — ${q}\n` +
+               `Report at most 6 findings as [HIGH|MED|LOW] where — issue — need.\n\n${doc}` }],
+  })));
+
+// The elephant (your app, with full context) triages reviews into FIX / CONTEST.</pre>
+
+  <footer>Part of <a href="https://github.com/vibhusharma101/vii-stack">vii-stack</a> (MIT). The pattern comes from Dave Rensin's essay <i>Elephants, Goldfish, and the New Golden Age of Software Engineering</i> and Google's <a href="https://github.com/google/elephant-goldfish-model">elephant-goldfish-model</a> (Apache-2.0). <code>/vii-goldfish</code> is an independent, smaller take on the idea.</footer>
+</main>
+
+<script>
+(function(){
+  var S = [
+    {t:"Before the run", c:"You and the elephant have planned together. All of that context lives in the session.",
+     e:["Conversation history","Decisions (Postgres over Redis)","Rejected approaches","Repo files it has read","Draft .vii/plan.md"], f:null, d:[".vii/plan.md"]},
+    {t:"1 · Predict", c:"The elephant writes down where it expects a newcomer to trip, before anyone else reads the doc.",
+     e:["Elephant prediction: migration order, rate limits, auth refresh"], f:null, d:[]},
+    {t:"2 · Spawn", c:"Four fresh subagents start in parallel. Each one gets only a path, a lens and an output format.",
+     e:[], f:["Lens prompt (e.g. gaps)","Path to .vii/plan.md","Output format, max 6 findings"], d:[]},
+    {t:"3 · Read", c:"Each goldfish reads the doc and the repo files it links to. It has no conversation and no reason for any decision.",
+     e:[], f:["Contents of .vii/plan.md","Linked files inside the repo","Its own findings list"], d:[]},
+    {t:"4 · Report", c:"Each goldfish returns its findings, and its context is thrown away. Only the reports come back to the elephant.",
+     e:["4 goldfish reports (14 findings)"], f:"gone", d:[]},
+    {t:"5 · Triage", c:"The elephant marks each finding FIX or CONTEST, compares them to its prediction, and writes both reports.",
+     e:["FIX / CONTEST verdicts","Blind spots: 5 found that it missed","Proposed doc edits"], f:"gone", d:[".vii/goldfish/plan.md",".vii/goldfish/plan.html"]},
+    {t:"6 · Approve", c:"You approve the fixes. The doc now carries context that used to exist only in the elephant's memory.",
+     e:["Approved edits applied"], f:"gone", d:[".vii/plan.md (updated)"]}
+  ];
+  var cur = 0, steps = document.getElementById('steps');
+  function li(text, isNew){ var l=document.createElement('li'); l.textContent=text; if(isNew) l.className='new'; return l; }
+  function show(i){
+    cur=i;
+    Array.prototype.forEach.call(steps.children,function(b,j){ b.setAttribute('aria-pressed', j===i); });
+    var cap=document.getElementById('caption'); cap.textContent='';
+    var b=document.createElement('b'); b.textContent=S[i].t+'. '; cap.appendChild(b); cap.appendChild(document.createTextNode(S[i].c));
+    var el=document.getElementById('eleList'); el.textContent='';
+    for(var k=0;k<=i;k++) S[k].e.forEach(function(x){ el.appendChild(li(x,k===i && i>0)); });
+    var fl=document.getElementById('fishList'), fe=document.getElementById('fishEmpty'); fl.textContent=''; fe.textContent='';
+    if(S[i].f===null) fe.textContent='No goldfish yet.';
+    else if(S[i].f==='gone') fe.textContent='Context discarded. Only the reports survived, and they now sit in the elephant’s context.';
+    else { var acc=[]; for(var m=2;m<=i;m++) if(Array.isArray(S[m].f)) S[m].f.forEach(function(x){ acc.push([x,m===i]); }); acc.forEach(function(a){ fl.appendChild(li(a[0],a[1])); }); }
+    var files=[]; for(var n=0;n<=i;n++) files=files.concat(S[n].d);
+    var dk=document.getElementById('disk'); dk.textContent='On disk: ';
+    var sp=document.createElement('span'); sp.textContent=files.join('  ·  '); dk.appendChild(sp);
+  }
+  S.forEach(function(s,i){ var b=document.createElement('button'); b.type='button'; b.textContent=s.t; b.onclick=function(){ show(i); }; steps.appendChild(b); });
+  show(4);
+})();
+</script>

@@ -18,7 +18,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 
 ---
 
-## Commands (40 total)
+## Commands (41 total)
 
 | Stage | Command | What it does |
 |-------|---------|-------------|
@@ -36,6 +36,7 @@ Each stage reads the previous stage's output. Skipping is allowed but discourage
 | | `/vii-diagram` | Mermaid diagram of a flow, sequence, schema or state machine |
 | **Review** | `/vii-review` | Staff engineer code review with severity-tagged findings |
 | | `/vii-lean-review` | Over-engineering audit — finds what to delete (stdlib, YAGNI, dead flexibility) |
+| | `/vii-goldfish` | Elephant & goldfish review — fresh zero-context subagents stress-test your plan, plus a visual HTML report |
 | | `/vii-investigate` | Five-whys root-cause debugger |
 | | `/vii-design-review` | Visual audit using live screenshots (WCAG AA) |
 | | `/vii-devex-review` | Cold-start friction audit from clean clone |
@@ -97,7 +98,7 @@ cd vii-stack
 ```
 
 The installer (idempotent — safe to re-run):
-1. Syncs all 40 skills to `~/.claude/skills/`
+1. Syncs all 41 skills to `~/.claude/skills/`
 2. Appends the vii-stack command list to `~/.claude/CLAUDE.md`
 3. Registers the safety hooks (`/vii-careful`, `/vii-freeze`) in `~/.claude/settings.json`
 4. Registers the Playwright MCP server for `/vii-browse`
@@ -124,6 +125,14 @@ After install, open Claude Code in **any project** and type `/vii-office-hours` 
 ```
 
 Stage artifacts live under `.vii/` in your project (gitignored by default).
+
+---
+
+## Elephant & goldfish review
+
+`/vii-goldfish` brings the [elephant-goldfish model](https://github.com/google/elephant-goldfish-model) into vii-stack. The **elephant** (your main Claude session) has the whole conversation in memory, so it can't see where its own doc leans on unwritten context. It hands the doc to 3-5 **goldfish**: fresh subagents with no memory, each reading through one lens (comprehension, gaps, buildability, zoom-out). The elephant sorts their findings into FIX or CONTEST and renders a visual report at `.vii/goldfish/<slug>.html`.
+
+How it works, as a page you can share: [`docs/elephant-goldfish.html`](docs/elephant-goldfish.html).
 
 ---
 

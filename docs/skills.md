@@ -73,6 +73,11 @@ Stages: **Think · Plan · Build · Review · Test · Ship · Reflect · Securit
 **Reads:** `git diff` vs base branch, `.vii/plan.md`.
 **Writes:** `.vii/review/<sha>.md` with severity-tagged findings. Auto-applies trivial fixes (formatting, dead code) and reports the rest.
 
+### `/vii-goldfish`
+**Purpose:** Elephant-and-goldfish document review. The main session (elephant, full context) hands a plan or spec to 3-5 fresh zero-context subagents (goldfish), each with one lens. The elephant then marks each finding FIX or CONTEST.
+**Reads:** `.vii/plan.md` (default) or any doc path given.
+**Writes:** `.vii/goldfish/<slug>.md` and a visual `.vii/goldfish/<slug>.html` built from the skill's `report-template.html`.
+
 ### `/vii-investigate`
 **Purpose:** Root-cause debugging methodology — five-whys, hypothesis log, no shortcuts.
 **Writes:** `.vii/investigate/<issue>.md` with: symptom, hypotheses tried, evidence, root cause, fix scope.
@@ -187,7 +192,7 @@ Stages: **Think · Plan · Build · Review · Test · Ship · Reflect · Securit
 | Think   | `/vii-office-hours`        | —                                                        |
 | Plan    | `/vii-autoplan`            | `/vii-plan-ceo`, `/vii-plan-eng`, `/vii-plan-design`, `/vii-plan-devex` |
 | Build   | `/vii-design-shotgun`      | `/vii-design-consult`, `/vii-design-html`                |
-| Review  | `/vii-review`              | `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`, `/vii-cso` |
+| Review  | `/vii-review`              | `/vii-goldfish`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`, `/vii-cso` |
 | Test    | `/vii-qa`                  | `/vii-qa-only`, `/vii-browse`                            |
 | Ship    | `/vii-ship`                | `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release` |
 | Reflect | `/vii-retro`               | `/vii-learn`                                             |

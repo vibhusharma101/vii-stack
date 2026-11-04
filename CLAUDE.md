@@ -15,7 +15,7 @@ You have the **vii-stack** skill pack installed. It encodes a `Think â†’ Plan â†
 - Think: `/vii-office-hours`, `/vii-spec`
 - Plan: `/vii-autoplan`, `/vii-plan-ceo`, `/vii-plan-eng`, `/vii-plan-design`, `/vii-plan-devex`, `/vii-plan-tune`
 - Build: `/vii-design-consult`, `/vii-design-shotgun`, `/vii-design-html`, `/vii-diagram`
-- Review: `/vii-review`, `/vii-lean-review`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`, `/vii-health`
+- Review: `/vii-review`, `/vii-lean-review`, `/vii-goldfish`, `/vii-investigate`, `/vii-design-review`, `/vii-devex-review`, `/vii-health`
 - Test: `/vii-qa`, `/vii-qa-only`, `/vii-browse`
 - Ship: `/vii-ship`, `/vii-land`, `/vii-canary`, `/vii-benchmark`, `/vii-doc-release`, `/vii-landing-report`
 - Context: `/vii-context-save`, `/vii-context-restore`
